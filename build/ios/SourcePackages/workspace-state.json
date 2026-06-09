@@ -1,0 +1,55 @@
+{
+  "object" : {
+    "artifacts" : [
+
+    ],
+    "dependencies" : [
+      {
+        "basedOn" : null,
+        "packageRef" : {
+          "identity" : "flutterframework",
+          "kind" : "fileSystem",
+          "location" : "/Users/macbook/ShortMovie_APP/ios/Flutter/ephemeral/Packages/.packages/FlutterFramework",
+          "name" : "FlutterFramework"
+        },
+        "state" : {
+          "name" : "fileSystem",
+          "path" : "/Users/macbook/ShortMovie_APP/ios/Flutter/ephemeral/Packages/.packages/FlutterFramework"
+        },
+        "subpath" : "flutterframework"
+      },
+      {
+        "basedOn" : null,
+        "packageRef" : {
+          "identity" : "shared_preferences_foundation-2.5.6",
+          "kind" : "fileSystem",
+          "location" : "/Users/macbook/ShortMovie_APP/ios/Flutter/ephemeral/Packages/.packages/shared_preferences_foundation-2.5.6",
+          "name" : "shared_preferences_foundation"
+        },
+        "state" : {
+          "name" : "fileSystem",
+          "path" : "/Users/macbook/ShortMovie_APP/ios/Flutter/ephemeral/Packages/.packages/shared_preferences_foundation-2.5.6"
+        },
+        "subpath" : "shared_preferences_foundation-2.5.6"
+      },
+      {
+        "basedOn" : null,
+        "packageRef" : {
+          "identity" : "video_player_avfoundation-2.9.4",
+          "kind" : "fileSystem",
+          "location" : "/Users/macbook/ShortMovie_APP/ios/Flutter/ephemeral/Packages/.packages/video_player_avfoundation-2.9.4",
+          "name" : "video_player_avfoundation"
+        },
+        "state" : {
+          "name" : "fileSystem",
+          "path" : "/Users/macbook/ShortMovie_APP/ios/Flutter/ephemeral/Packages/.packages/video_player_avfoundation-2.9.4"
+        },
+        "subpath" : "video_player_avfoundation-2.9.4"
+      }
+    ],
+    "prebuilts" : [
+
+    ]
+  },
+  "version" : 7
+}

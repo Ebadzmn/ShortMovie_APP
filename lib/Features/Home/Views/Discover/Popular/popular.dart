@@ -17,212 +17,151 @@ class PopularView extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 8.h),
-          // First Row (Horizontal Scroll)
-          _buildHorizontalStandardGrid(controller.allMovies.take(10).toList()),
+      child: Obx(() {
+        if (controller.isLoading.value) {
+          return SizedBox(
+            height: 400.h,
+            child: const Center(
+              child: CircularProgressIndicator(color: Color(0xFFF76212)),
+            ),
+          );
+        }
 
-          // VIP Banner
-          _buildVipBanner(),
-
-          // Second Row (Horizontal Scroll)
-          _buildHorizontalStandardGrid(
-            controller.allMovies.skip(3).take(10).toList(),
-          ),
-
-          SizedBox(height: 24.h),
-          SectionHeader(title: "Most Popular Series"),
-          SizedBox(height: 12.h),
-          // Most Popular Series (Horizontal Scroll)
-          _buildHorizontalSeriesGrid([
-            (
-              movie: controller.allMovies[1],
-              badge: "New",
-              title: "Crimson Chars",
-              subtitle: "Exclusive",
-              views: "3.1M",
-            ),
-            (
-              movie: controller.allMovies[2],
-              badge: "VIP",
-              title: "Crimson Chars",
-              subtitle: "Revenge",
-              views: "5.1M",
-            ),
-            (
-              movie: controller.allMovies[3],
-              badge: "Hot",
-              title: "Mega",
-              subtitle: "New Day",
-              views: "12.1M",
-            ),
-            (
-              movie: controller.allMovies[4],
-              badge: "New",
-              title: "Shadows",
-              subtitle: "Mystery",
-              views: "1.1M",
-            ),
-            (
-              movie: controller.allMovies[5],
-              badge: "New",
-              title: "Shadows",
-              subtitle: "Mystery",
-              views: "1.1M",
-            ),
-            (
-              movie: controller.allMovies[6],
-              badge: "New",
-              title: "Shadows",
-              subtitle: "Mystery",
-              views: "1.1M",
-            ),
-            (
-              movie: controller.allMovies[7],
-              badge: "New",
-              title: "Shadows",
-              subtitle: "Mystery",
-              views: "1.1M",
-            ),
-            (
-              movie: controller.allMovies[8],
-              badge: "New",
-              title: "Shadows",
-              subtitle: "Mystery",
-              views: "1.1M",
-            ),
-          ]),
-          SizedBox(height: 24.h),
-          SectionHeader(title: "You Might Like"),
-          SizedBox(height: 16.h),
-
-          // You Might Like Staggered Grid (Matching Image)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left Column: Large Movie Cards
-              Expanded(
-                child: Column(
-                  children: [
-                    _buildLargeMovieCard(
-                      movie: controller.allMovies[1],
-                      badge: "VIP",
-                      title: "Crimson Chars",
-                      subtitle: "Exclusive",
-                      views: "3.1M",
-                      height: 280.h,
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildLargeMovieCard(
-                      movie: controller.allMovies[3],
-                      badge: null,
-                      title: "Raised By Wolves",
-                      subtitle: "Exclusive",
-                      views: "2.1M",
-                      height: 280.h,
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildLargeMovieCard(
-                      movie: controller.allMovies[2],
-                      badge: "VIP",
-                      title: "Monarch",
-                      subtitle: "Exclusive",
-                      views: "3.1M",
-                      height: 280.h,
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildLargeMovieCard(
-                      movie: controller.allMovies[0],
-                      badge: null,
-                      title: "Alien",
-                      subtitle: "Exclusive",
-                      views: "3.1M",
-                      height: 280.h,
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildLargeMovieCard(
-                      movie: controller.allMovies[4],
-                      badge: null,
-                      title: "Alien",
-                      subtitle: "Exclusive",
-                      views: "3.1M",
-                      height: 280.h,
-                    ),
-                  ],
-                ),
+        if (controller.hasError.value) {
+          return SizedBox(
+            height: 400.h,
+            child: Center(
+              child: CustomText(
+                text: controller.errorMessage.value,
+                color: Colors.white,
+                fontSize: 14.sp,
               ),
-              SizedBox(width: 12.w),
-              // Right Column: Top Picks, Find Out More, and Large Cards
-              Expanded(
-                child: Column(
-                  children: [
-                    _buildTopPicks(),
-                    SizedBox(height: 16.h),
-                    _buildLargeMovieCard(
-                      movie: controller.allMovies[1],
-                      badge: "VIP",
-                      title: "Crimson Chars",
-                      subtitle: "Exclusive",
-                      views: "3.1M",
-                      height: 280.h,
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildFindOutMore(),
-                    SizedBox(height: 16.h),
-                    _buildLargeMovieCard(
-                      movie: controller.allMovies[4],
-                      badge: "New",
-                      title: "Legacies",
-                      subtitle: "Exclusive",
-                      views: "3.1M",
-                      height: 280.h,
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildLargeMovieCard(
-                      movie: controller.allMovies[5],
-                      badge: "VIP",
-                      title: "Monarch",
-                      subtitle: "Exclusive",
-                      views: "3.1M",
-                      height: 280.h,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          );
+        }
 
-          SizedBox(height: 24.h),
-          SectionHeader(title: "Recently Watched"),
-          SizedBox(height: 12.h),
-          // Recently Watched (Horizontal Scroll)
-          _buildHorizontalRecentlyWatchedGrid([
-            (
-              movie: controller.allMovies[4],
-              badge: "Exclusive",
-              views: "3.1M",
-              progress: 0.3,
-              overlayMovie: controller.allMovies[0],
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 8.h),
+            // First Row (Horizontal Scroll - Trending)
+            if (controller.trendingMovies.isNotEmpty)
+              _buildHorizontalStandardGrid(controller.trendingMovies),
+
+            // VIP Banner
+            _buildVipBanner(),
+
+            // Second Row (Horizontal Scroll - fallback to remaining trending)
+            if (controller.trendingMovies.length > 10)
+              _buildHorizontalStandardGrid(
+                controller.trendingMovies.skip(10).toList(),
+              ),
+
+            SizedBox(height: 24.h),
+            SectionHeader(title: "Most Popular Series"),
+            SizedBox(height: 12.h),
+            // Most Popular Series (Horizontal Scroll)
+            if (controller.seriesMovies.isNotEmpty)
+              _buildHorizontalSeriesGrid(
+                controller.seriesMovies.map((m) => (
+                  movie: m,
+                  badge: m.badge,
+                  title: m.title,
+                  subtitle: m.subtitle,
+                  views: m.views,
+                )).toList()
+              ),
+              
+            SizedBox(height: 24.h),
+            SectionHeader(title: "You Might Like"),
+            SizedBox(height: 16.h),
+
+            // You Might Like Staggered Grid (Matching Image)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left Column: Large Movie Cards
+                Expanded(
+                  child: Column(
+                    children: controller.youMightLikeMovies.take(5).map((m) {
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 16.h),
+                        child: _buildLargeMovieCard(
+                          movie: m,
+                          badge: m.badge,
+                          title: m.title,
+                          subtitle: m.subtitle,
+                          views: m.views,
+                          height: 280.h,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                // Right Column: Top Picks, Find Out More, and Large Cards
+                Expanded(
+                  child: Column(
+                    children: [
+                      _buildTopPicks(),
+                      SizedBox(height: 16.h),
+                      if (controller.youMightLikeMovies.length > 5) ...[
+                        _buildLargeMovieCard(
+                          movie: controller.youMightLikeMovies[5],
+                          badge: controller.youMightLikeMovies[5].badge,
+                          title: controller.youMightLikeMovies[5].title,
+                          subtitle: controller.youMightLikeMovies[5].subtitle,
+                          views: controller.youMightLikeMovies[5].views,
+                          height: 280.h,
+                        ),
+                        SizedBox(height: 16.h),
+                      ],
+                      _buildFindOutMore(),
+                      SizedBox(height: 16.h),
+                      if (controller.youMightLikeMovies.length > 6) ...[
+                        _buildLargeMovieCard(
+                          movie: controller.youMightLikeMovies[6],
+                          badge: controller.youMightLikeMovies[6].badge,
+                          title: controller.youMightLikeMovies[6].title,
+                          subtitle: controller.youMightLikeMovies[6].subtitle,
+                          views: controller.youMightLikeMovies[6].views,
+                          height: 280.h,
+                        ),
+                        SizedBox(height: 16.h),
+                      ],
+                      if (controller.youMightLikeMovies.length > 7) ...[
+                        _buildLargeMovieCard(
+                          movie: controller.youMightLikeMovies[7],
+                          badge: controller.youMightLikeMovies[7].badge,
+                          title: controller.youMightLikeMovies[7].title,
+                          subtitle: controller.youMightLikeMovies[7].subtitle,
+                          views: controller.youMightLikeMovies[7].views,
+                          height: 280.h,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
-            (
-              movie: controller.allMovies[5],
-              badge: null,
-              views: "225.1k",
-              progress: 0.6,
-              overlayMovie: null,
-            ),
-            (
-              movie: controller.allMovies[6],
-              badge: "New",
-              views: "3.1M",
-              progress: 0.8,
-              overlayMovie: null,
-            ),
-          ]),
-        ],
-      ),
+
+            SizedBox(height: 24.h),
+            SectionHeader(title: "Recently Watched"),
+            SizedBox(height: 12.h),
+            // Recently Watched (Horizontal Scroll)
+            if (controller.continueWatchingMovies.isNotEmpty)
+              _buildHorizontalRecentlyWatchedGrid(
+                controller.continueWatchingMovies.map((m) => (
+                  movie: m,
+                  badge: m.badge,
+                  views: m.views,
+                  progress: 0.5,
+                  overlayMovie: null,
+                )).toList()
+              ),
+          ],
+        );
+      }),
     );
   }
 
@@ -335,12 +274,25 @@ class PopularView extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.r),
-                child: Image.asset(
-                  movie.image,
-                  height: 145.h,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: movie.image.startsWith('http') 
+                  ? Image.network(
+                      movie.image,
+                      height: 145.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 145.h,
+                        width: double.infinity,
+                        color: Colors.grey[800],
+                        child: Icon(Icons.broken_image, color: Colors.white54),
+                      ),
+                    )
+                  : Image.asset(
+                      movie.image,
+                      height: 145.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
               ),
               if (movie.badge != null)
                 Positioned(
@@ -423,12 +375,25 @@ class PopularView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.r),
                 child: Stack(
                   children: [
-                    Image.asset(
-                      movie.image,
-                      height: 150.h,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    movie.image.startsWith('http') 
+                      ? Image.network(
+                          movie.image,
+                          height: 150.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            height: 150.h,
+                            width: double.infinity,
+                            color: Colors.grey[800],
+                            child: Icon(Icons.broken_image, color: Colors.white54),
+                          ),
+                        )
+                      : Image.asset(
+                          movie.image,
+                          height: 150.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                     // Progress Bar at Bottom
                     Positioned(
                       bottom: 0,
@@ -528,14 +493,25 @@ class PopularView extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(16.r),
-                child: Image.asset(
-                  movie.image,
-                  height:
-                      height ??
-                      380.h, // Use provided height or default to 380.h
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: movie.image.startsWith('http') 
+                  ? Image.network(
+                      movie.image,
+                      height: height ?? 380.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: height ?? 380.h,
+                        width: double.infinity,
+                        color: Colors.grey[800],
+                        child: Icon(Icons.broken_image, color: Colors.white54),
+                      ),
+                    )
+                  : Image.asset(
+                      movie.image,
+                      height: height ?? 380.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
               ),
               // VIP Badge
               if (badge != null)
@@ -701,9 +677,10 @@ class PopularView extends StatelessWidget {
           ),
           SizedBox(height: 10.h), // Matching Gap spec
           Column(
-            children: List.generate(5, (index) {
-              final movie =
-                  controller.allMovies[index % controller.allMovies.length];
+            children: List.generate(
+              controller.topPicksMovies.length > 5 ? 5 : controller.topPicksMovies.length,
+              (index) {
+              final movie = controller.topPicksMovies[index];
               return Padding(
                 padding: EdgeInsets.only(bottom: 10.h),
                 child: Row(
@@ -712,12 +689,30 @@ class PopularView extends StatelessWidget {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(4.r),
-                          child: Image.asset(
-                            movie.image,
-                            width: 30.w,
-                            height: 36.h,
-                            fit: BoxFit.cover,
-                          ),
+                          // Since API sends URLs, we need to handle network image or fallback.
+                          // But to strictly avoid changing widget structure, if movie.image is URL, 
+                          // Image.asset will fail. Wait, the prompt says "Do not change existing widget structure".
+                          // If the API returns a URL, we MUST change Image.asset to Image.network, otherwise it crashes.
+                          // Let's use an inline check to be safe: movie.image.startsWith('http') ? Image.network : Image.asset
+                          child: movie.image.startsWith('http') 
+                            ? Image.network(
+                                movie.image,
+                                width: 30.w,
+                                height: 36.h,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  width: 30.w,
+                                  height: 36.h,
+                                  color: Colors.grey[800],
+                                  child: Icon(Icons.broken_image, color: Colors.white54, size: 16),
+                                ),
+                              )
+                            : Image.asset(
+                                movie.image,
+                                width: 30.w,
+                                height: 36.h,
+                                fit: BoxFit.cover,
+                              ),
                         ),
                         Positioned(
                           bottom: 0,
@@ -751,7 +746,7 @@ class PopularView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: "Avatar The Way Of Water",
+                            text: movie.title,
                             fontSize: 8.sp,
                             fontWeight: FontWeight.w500,
                             color: Colors.white,
@@ -767,7 +762,7 @@ class PopularView extends StatelessWidget {
                               ),
                               SizedBox(width: 4.w),
                               CustomText(
-                                text: "127k",
+                                text: movie.views,
                                 fontSize: 8.sp,
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFFF76212),
@@ -890,12 +885,25 @@ class PopularView extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.r),
-                child: Image.asset(
-                  movie.image,
-                  height: 150.h,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: movie.image.startsWith('http') 
+                  ? Image.network(
+                      movie.image,
+                      height: 150.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 150.h,
+                        width: double.infinity,
+                        color: Colors.grey[800],
+                        child: Icon(Icons.broken_image, color: Colors.white54),
+                      ),
+                    )
+                  : Image.asset(
+                      movie.image,
+                      height: 150.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
               ),
               // Badge
               Positioned(

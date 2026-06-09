@@ -1,14 +1,37 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uremz100/Config/routes.dart';
 import 'package:uremz100/Shared/Widgets/pip_wrapper_video_Popup.dart';
 import 'package:uremz100/Utils/app_colors.dart';
+import 'package:uuid/uuid.dart';
+
+import 'package:uremz100/core/services/storage_service.dart';
+import 'package:uremz100/core/network/network_caller.dart';
+import 'package:uremz100/Data/Repositories/home_repository.dart';
+
+Future<void> _initializeGuestId() async {
+  final prefs = await SharedPreferences.getInstance();
+  String? guestId = prefs.getString('guest_id');
+  if (guestId == null) {
+    const uuid = Uuid();
+    guestId = 'guest-${uuid.v4()}';
+    await prefs.setString('guest_id', guestId);
+    debugPrint('guest id generate hoyse $guestId');
+  }
+}
 
 void main() async {
   // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Services and Core Components
+  await Get.putAsync(() => StorageService().init());
+  Get.put(NetworkCaller());
+  Get.put(HomeRepository());
 
   // // Initialize Firebase
   // await Firebase.initializeApp();
@@ -16,6 +39,9 @@ void main() async {
   // // Initialize Firebase Messaging
   // await FirebaseNotificationService.initialize();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  
+  await _initializeGuestId();
+  
   runApp(const MyApp());
 }
 

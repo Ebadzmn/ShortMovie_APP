@@ -38,26 +38,32 @@ class DiscoverScreen extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Column(
-                      children: [
-                        Obx(() {
-                          switch (controller.selectedCategory.value) {
-                            case 'Popular':
-                              return PopularView(controller: controller);
-                            case 'New':
-                              return NewView(controller: controller);
-                            case 'VIP':
-                              return VipView(controller: controller);
-                            case 'Ranking':
-                              return RankingView(controller: controller);
-                            default:
-                              return PopularView(controller: controller);
-                          }
-                        }),
-                        SizedBox(height: 40.h), // Space for bottom navigation
-                      ],
+                  child: RefreshIndicator(
+                    color: const Color(0xFFF76212),
+                    backgroundColor: const Color(0xFF1D1817),
+                    onRefresh: controller.refreshData,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Column(
+                        children: [
+                          Obx(() {
+                            switch (controller.selectedCategory.value) {
+                              case 'Popular':
+                                return PopularView(controller: controller);
+                              case 'New':
+                                return NewView(controller: controller);
+                              case 'VIP':
+                                return VipView(controller: controller);
+                              case 'Ranking':
+                                return RankingView(controller: controller);
+                              default:
+                                return PopularView(controller: controller);
+                            }
+                          }),
+                          SizedBox(height: 40.h), // Space for bottom navigation
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -1,64 +1,43 @@
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_storage/get_storage.dart';
+import '../constants/app_constants.dart';
 
 class StorageService extends GetxService {
-  //===========================> Get Data <========================
-  static Future<String> getString(String key) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.getString(key) ?? "";
+  late GetStorage _box;
+
+  Future<StorageService> init() async {
+    await GetStorage.init();
+    _box = GetStorage();
+    return this;
   }
 
-  static Future<bool?> getBool(String key) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.getBool(key);
+  /// Save authentication token
+  Future<void> saveToken(String token) async {
+    await _box.write(AppConstants.tokenKey, token);
   }
 
-  static Future<int> getInt(String key) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.getInt(key) ?? -1;
+  /// Get authentication token
+  String? getToken() {
+    return _box.read<String>(AppConstants.tokenKey);
   }
 
-  static Future<double?> getDouble(String key) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.getDouble(key);
+  /// Clear authentication token
+  Future<void> clearToken() async {
+    await _box.remove(AppConstants.tokenKey);
   }
 
-  //=============================> Save Data <========================
-  static Future<bool> setString(String key, String value) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.setString(key, value);
+  /// Generic save method
+  Future<void> writeData(String key, dynamic value) async {
+    await _box.write(key, value);
   }
 
-  static Future<bool> setBool(String key, bool value) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.setBool(key, value);
+  /// Generic read method
+  T? readData<T>(String key) {
+    return _box.read<T>(key);
   }
 
-  static Future<bool> setInt(String key, int value) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.setInt(key, value);
-  }
-
-  static Future<bool> setDouble(String key, double value) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.setDouble(key, value);
-  }
-
-  //===============================> Remove Value <==================================
-  static Future<bool> remove(String key) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.remove(key);
-  }
-
-  //==============================> Clear All <============================
-  static Future<bool> clearAll() async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.clear();
-  }
-
-  //==============================> Check Key Exists <============================
-  static Future<bool> containsKey(String key) async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.containsKey(key);
+  /// Clear all data
+  Future<void> clearAll() async {
+    await _box.erase();
   }
 }

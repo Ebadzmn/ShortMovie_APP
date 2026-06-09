@@ -15,12 +15,9 @@ class VipView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final movies = controller.vipMovies;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: "Top VIP Picks", onMore: () {}),
-          SizedBox(height: 12.h),
           Row(
             children: [
               _buildToggleButton("Daily"),
@@ -29,17 +26,66 @@ class VipView extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.h),
-          _buildVipGrid(movies.take(3).toList(), forceVipBadge: true),
-          SizedBox(height: 24.h),
-          SectionHeader(title: "Only On ShortMax"),
-          SizedBox(height: 12.h),
-          _buildVipGrid(movies.skip(1).take(3).toList()),
-          SizedBox(height: 24.h),
-          SectionHeader(title: "Hot Now"),
-          SizedBox(height: 12.h),
-          _buildVipGrid(movies.skip(2).take(3).toList()),
-          SizedBox(height: 24.h),
-          _buildVipGrid(movies.skip(3).take(3).toList(), forceNewBadge: true),
+          if (controller.isVipLoading.value)
+            SizedBox(
+              height: 400.h,
+              child: const Center(
+                child: CircularProgressIndicator(color: Color(0xFFF76212)),
+              ),
+            )
+          else if (controller.hasVipError.value)
+            SizedBox(
+              height: 400.h,
+              child: Center(
+                child: CustomText(
+                  text: controller.vipErrorMessage.value,
+                  color: Colors.white,
+                  fontSize: 14.sp,
+                ),
+              ),
+            )
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: controller.vipSections.length,
+              itemBuilder: (context, index) {
+                final section = controller.vipSections[index];
+                final items = section.items;
+
+                final mappedItems = items.map((item) => DiscoverMovie(
+                  id: item.id.toString(),
+                  title: item.title,
+                  subtitle: item.contentType,
+                  image: item.poster,
+                  badge: item.isRecent ? 'New' : null,
+                  views: item.rating.toString(),
+                  categories: ['VIP'],
+                )).toList();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SectionHeader(title: section.title, onMore: () {}),
+                    SizedBox(height: 12.h),
+                    if (items.isEmpty)
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                        child: Center(
+                          child: CustomText(
+                            text: "No content available yet.",
+                            color: Colors.white54,
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                      )
+                    else
+                      _buildVipGrid(mappedItems, forceVipBadge: section.type == 'VIP'),
+                    SizedBox(height: 24.h),
+                  ],
+                );
+              },
+            ),
         ],
       );
     });
@@ -96,12 +142,25 @@ class VipView extends StatelessWidget {
                 // Image
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
-                  child: Image.asset(
-                    movie.image,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: movie.image.startsWith('http')
+                      ? Image.network(
+                          movie.image,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            color: Colors.grey[800],
+                            child: const Icon(Icons.broken_image, color: Colors.white54),
+                          ),
+                        )
+                      : Image.asset(
+                          movie.image,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                 ),
                 // Badge (VIP or New)
                 if (displayBadge != null)

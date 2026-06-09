@@ -4,8 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../Models/discrive_models.dart';
 import '../Data/discover_data.dart';
+import 'package:uremz100/Data/Repositories/home_repository.dart';
+import 'package:uremz100/Data/Models/home_content_model.dart';
 
 class DiscoverController extends GetxController {
+  final HomeRepository _homeRepository = Get.find<HomeRepository>();
+
   var selectedCategory = 'Popular'.obs;
   var showBonusPopup = false.obs;
   var vipPeriod = 'Daily'.obs;
@@ -22,11 +26,137 @@ class DiscoverController extends GetxController {
   final List<DiscoverMovie> allMovies = DiscoverData.allMovies;
   final List<BonusItem> dailyBonus = DiscoverData.dailyBonus;
 
+  // New API State
+  // Popular API State
+  var isLoading = false.obs;
+  var hasError = false.obs;
+  var errorMessage = ''.obs;
+
+  // New Tab API State
+  var isNewLoading = false.obs;
+  var hasNewError = false.obs;
+  var newErrorMessage = ''.obs;
+  var newSections = <HomeSection>[].obs;
+
+  // VIP Tab API State
+  var isVipLoading = false.obs;
+  var hasVipError = false.obs;
+  var vipErrorMessage = ''.obs;
+  var vipSections = <HomeSection>[].obs;
+
+  // Dynamic Lists mapped to DiscoverMovie for Popular Tab
+  var trendingMovies = <DiscoverMovie>[].obs;
+  var seriesMovies = <DiscoverMovie>[].obs;
+  var continueWatchingMovies = <DiscoverMovie>[].obs;
+  var youMightLikeMovies = <DiscoverMovie>[].obs;
+  var topPicksMovies = <DiscoverMovie>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     popularScrollController = ScrollController();
     _startMarquee();
+    fetchHomeContent();
+  }
+
+  Future<void> fetchHomeContent() async {
+    isLoading.value = true;
+    hasError.value = false;
+    errorMessage.value = '';
+
+    final response = await _homeRepository.getHomeContent('popular');
+
+    if (response.isSuccess && response.data != null) {
+      _mapSectionsToState(response.data!.sections);
+    } else {
+      hasError.value = true;
+      errorMessage.value = response.message;
+    }
+    
+    isLoading.value = false;
+  }
+
+  Future<void> fetchNewContent() async {
+    isNewLoading.value = true;
+    hasNewError.value = false;
+    newErrorMessage.value = '';
+
+    final response = await _homeRepository.getHomeContent('new');
+
+    if (response.isSuccess && response.data != null) {
+      newSections.value = response.data!.sections;
+    } else {
+      hasNewError.value = true;
+      newErrorMessage.value = response.message;
+    }
+    
+    isNewLoading.value = false;
+  }
+
+  Future<void> refreshData() async {
+    if (selectedCategory.value == 'Popular') {
+      await fetchHomeContent();
+    } else if (selectedCategory.value == 'New') {
+      await fetchNewContent();
+    } else if (selectedCategory.value == 'VIP') {
+      await fetchVipContent(vipPeriod.value.toLowerCase());
+    }
+    // For other tabs, add fetch calls as they are implemented
+  }
+
+  Future<void> fetchVipContent(String filter) async {
+    isVipLoading.value = true;
+    hasVipError.value = false;
+    vipErrorMessage.value = '';
+
+    final response = await _homeRepository.getHomeContent('vip', filter: filter);
+
+    if (response.isSuccess && response.data != null) {
+      vipSections.value = response.data!.sections;
+    } else {
+      hasVipError.value = true;
+      vipErrorMessage.value = response.message;
+    }
+    
+    isVipLoading.value = false;
+  }
+
+  void _mapSectionsToState(List<HomeSection> sections) {
+    trendingMovies.clear();
+    seriesMovies.clear();
+    continueWatchingMovies.clear();
+    youMightLikeMovies.clear();
+    topPicksMovies.clear();
+
+    for (var section in sections) {
+      final mappedItems = section.items.map((item) => DiscoverMovie(
+        id: item.id.toString(),
+        title: item.title,
+        subtitle: item.contentType,
+        image: item.poster,
+        badge: item.isRecent ? 'New' : null,
+        views: item.rating.toString(),
+        categories: ['Popular'],
+      )).toList();
+
+      switch (section.type) {
+        case 'TRENDING':
+          trendingMovies.addAll(mappedItems);
+          break;
+        case 'SERIES':
+          seriesMovies.addAll(mappedItems);
+          break;
+        case 'CONTINUE_WATCHING':
+          continueWatchingMovies.addAll(mappedItems);
+          break;
+        case 'YOU_MIGHT_LIKE':
+          youMightLikeMovies.addAll(mappedItems);
+          break;
+        case 'TOP_PICKS':
+          topPicksMovies.addAll(mappedItems);
+          break;
+      }
+    }
   }
 
   void _startMarquee() {
@@ -87,10 +217,18 @@ class DiscoverController extends GetxController {
 
   void changeCategory(String category) {
     selectedCategory.value = category;
+    if (category == 'New' && (newSections.isEmpty || hasNewError.value)) {
+      fetchNewContent();
+    } else if (category == 'VIP' && (vipSections.isEmpty || hasVipError.value)) {
+      fetchVipContent(vipPeriod.value.toLowerCase());
+    }
   }
 
   void changeVipPeriod(String period) {
-    vipPeriod.value = period;
+    if (vipPeriod.value != period) {
+      vipPeriod.value = period;
+      fetchVipContent(period.toLowerCase());
+    }
   }
 
   List<DiscoverMovie> get vipMovies {
@@ -117,35 +255,26 @@ class DiscoverController extends GetxController {
   }
 
   List<DiscoverMovie> get rankingMovies {
-    // selectedRankingTab.value অ্যাক্সেস করার মাধ্যমে এই গেটারটিকে রিঅ্যাক্টিভ করা হয়েছে
-    // যাতে ইউজার যখনই ট্যাবে ক্লিক করবে, তখনই ডাটা আপডেট হয়।
     final tab = selectedRankingTab.value;
 
-    // মডেল থেকে সব ডাটা নিয়ে আসা হচ্ছে।
-    // এখানে আপনি প্রতিটি ক্যাটাগরির জন্য আলাদা ফিল্টারিং লজিক দিতে পারেন।
     if (tab == 'Popular') {
-      // Popular ক্যাটাগরির মুভিগুলো রিটার্ন করা হচ্ছে
       return allMovies.where((m) => m.categories.contains('Popular')).toList();
     } else if (tab == 'Daily Top') {
-      // Daily Top ক্যাটাগরির মুভিগুলো ফিল্টার করে আনা হচ্ছে
       return allMovies
           .where(
             (m) => m.categories.contains('Daily Top') || m.views.contains('M'),
           )
           .toList();
     } else if (tab == 'Weekly Top') {
-      // Weekly Top এর জন্য ডাটা ফিল্টার করা হচ্ছে
       return allMovies
           .where((m) => m.categories.contains('Weekly Top') || m.isVip)
           .toList();
     } else if (tab == 'Monthly Top') {
-      // Monthly Top এর জন্য মডেল থেকে ডাটা ফিল্টার করা হচ্ছে
       return allMovies
           .where((m) => m.categories.contains('Monthly Top') || m.badge != null)
           .toList();
     }
 
-    // ডিফল্টভাবে সব মুভি দেখানো হচ্ছে যদি কোনো কন্ডিশন না মিলে
     return allMovies;
   }
 
