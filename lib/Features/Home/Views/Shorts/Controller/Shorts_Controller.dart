@@ -8,6 +8,7 @@ import 'package:uremz100/Utils/app_images.dart';
 import '../Model/shorts_model.dart';
 import '../../Bottom_NabBar/Controller/Bottom_NabBar_Controller.dart';
 import 'Shorts_Video_Controller.dart';
+import 'package:uremz100/core/services/storage_service.dart';
 
 import '../More/more_screen.dart';
 
@@ -138,16 +139,25 @@ class ShortsController extends GetxController {
     videoQuality.value = quality;
   }
 
+  bool get isLoggedIn {
+    try {
+      final token = Get.find<StorageService>().getToken();
+      return token != null && token.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void toggleFav() {
     isFav.value = !isFav.value;
-    if (isFav.value) {
+    if (isFav.value && !isLoggedIn) {
       showLoginPopup.value = true;
     }
   }
 
   void toggleBookmark() {
     isBookmarked.value = !isBookmarked.value;
-    if (isBookmarked.value) {
+    if (isBookmarked.value && !isLoggedIn) {
       showLoginPopup.value = true;
     }
   }

@@ -6,12 +6,14 @@ import 'package:uremz100/Shared/Widgets/Custom_AppBar.dart';
 import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
 import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_images.dart';
+import '../../../../Auth/Controllers/auth_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
   SettingsScreen({super.key});
 
   final isPasswordVisible = false.obs;
   final isAccountExpanded = false.obs;
+  final AuthController _authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -226,8 +228,7 @@ class SettingsScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle Logout
-                      Get.back();
+                      _authController.logout();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.orange100,

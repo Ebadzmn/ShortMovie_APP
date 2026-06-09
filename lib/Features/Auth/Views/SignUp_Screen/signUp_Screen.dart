@@ -12,6 +12,7 @@ import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_consts.dart';
 import 'package:uremz100/Utils/app_icons.dart';
 import 'package:uremz100/Utils/app_images.dart';
+import '../../Controllers/auth_controller.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
@@ -21,6 +22,7 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController NewPasswordController = TextEditingController();
   final TextEditingController ConfromPasswordController =
       TextEditingController();
+  final AuthController _authController = Get.put(AuthController());
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -188,7 +190,11 @@ class SignupScreen extends StatelessWidget {
                   text: "Sign Up",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Get.toNamed(Routes.forgotOtpScreen);
+                      _authController.registerUser(
+                        name: nameController.text.trim(),
+                        email: emailController.text.trim(),
+                        password: NewPasswordController.text,
+                      );
                     }
                   },
                 ),

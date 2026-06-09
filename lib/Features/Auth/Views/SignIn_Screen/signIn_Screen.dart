@@ -12,11 +12,13 @@ import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_consts.dart';
 import 'package:uremz100/Utils/app_icons.dart';
 import 'package:uremz100/Utils/app_images.dart';
+import '../../Controllers/auth_controller.dart';
 
 class SigninScreen extends StatelessWidget {
   SigninScreen({super.key});
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final AuthController _authController = Get.put(AuthController());
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -128,7 +130,10 @@ class SigninScreen extends StatelessWidget {
                   text: "Sign in",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Get.offAllNamed(Routes.bottomNabbarScreens);
+                      _authController.login(
+                        email: emailController.text.trim(), 
+                        password: passwordController.text,
+                      );
                     }
                   },
                 ),

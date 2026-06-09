@@ -12,10 +12,12 @@ import 'package:uremz100/Shared/Widgets/Custom_Text_Gray.dart';
 import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_consts.dart';
 import 'package:uremz100/Utils/app_images.dart';
+import '../../Controllers/auth_controller.dart';
 
 class ForgotPassScreen extends StatelessWidget {
   ForgotPassScreen({super.key});
   final TextEditingController emailController = TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -106,7 +108,7 @@ class ForgotPassScreen extends StatelessWidget {
                   text: "Send OTP",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Get.toNamed(Routes.forgotOtpScreen);
+                      _authController.forgotPassword(email: emailController.text.trim());
                     }
                   },
                 ),

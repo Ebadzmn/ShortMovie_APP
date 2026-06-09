@@ -7,12 +7,16 @@ import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
 import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_icons.dart';
 import 'package:uremz100/Utils/app_images.dart';
+import 'package:uremz100/core/services/storage_service.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final token = Get.find<StorageService>().getToken();
+    final bool isLoggedIn = token != null && token.isNotEmpty;
+
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -32,17 +36,18 @@ class ProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
-                      text: "Md Ibrahim Khalil",
+                      text: isLoggedIn ? "Md Ibrahim Khalil" : "Guest User",
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
                     ),
                     SizedBox(height: 5.h),
-                    CustomText(
-                      text: "UID: 637676603",
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFD4D4D4),
-                    ),
+                    if (isLoggedIn)
+                      CustomText(
+                        text: "UID: 637676603",
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFFD4D4D4),
+                      ),
                   ],
                 ),
               ],

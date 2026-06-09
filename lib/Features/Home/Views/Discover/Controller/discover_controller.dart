@@ -6,6 +6,7 @@ import '../Models/discrive_models.dart';
 import '../Data/discover_data.dart';
 import 'package:uremz100/Data/Repositories/home_repository.dart';
 import 'package:uremz100/Data/Models/home_content_model.dart';
+import 'package:uremz100/core/services/storage_service.dart';
 
 class DiscoverController extends GetxController {
   final HomeRepository _homeRepository = Get.find<HomeRepository>();
@@ -199,11 +200,24 @@ class DiscoverController extends GetxController {
     showMoviePopup.value = true;
   }
 
+  bool get isLoggedIn {
+    try {
+      final token = Get.find<StorageService>().getToken();
+      return token != null && token.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void closeMoviePopup() {
     showMoviePopup.value = false;
-    // After 500ms, show login popup
+    // After 500ms, show login popup if not logged in
     Future.delayed(const Duration(milliseconds: 500), () {
-      showLoginPopup.value = true;
+      if (!isLoggedIn) {
+        showLoginPopup.value = true;
+      } else {
+        closeLoginPopup();
+      }
     });
   }
 

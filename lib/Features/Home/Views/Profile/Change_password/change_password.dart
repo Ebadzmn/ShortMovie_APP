@@ -6,6 +6,7 @@ import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
 import 'package:uremz100/Shared/Widgets/Custom_Text_Field.dart';
 import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_consts.dart';
+import '../../../../Auth/Controllers/auth_controller.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -19,6 +20,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final AuthController _authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +104,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Get.back();
+                      _authController.changePassword(
+                        currentPassword: _oldPasswordController.text,
+                        newPassword: _newPasswordController.text,
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(

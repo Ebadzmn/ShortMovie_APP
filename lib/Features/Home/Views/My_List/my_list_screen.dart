@@ -8,8 +8,9 @@ import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
 import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_icons.dart';
 import 'Controller/my_list_controller.dart';
-import 'Model/my_list_model.dart';
-import '../Bottom_NabBar/Controller/Bottom_NabBar_Controller.dart';
+import 'package:uremz100/Data/Models/recently_watched_model.dart';
+import 'package:uremz100/Data/Models/my_collection_model.dart';
+import 'package:uremz100/Features/Home/Views/Bottom_NabBar/Controller/Bottom_NabBar_Controller.dart';
 
 class MyListScreen extends GetView<MyListController> {
   const MyListScreen({super.key});
@@ -41,31 +42,82 @@ class MyListScreen extends GetView<MyListController> {
       ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20.h),
-                _buildSectionHeader("Recently Watched"),
-                SizedBox(height: 15.h),
-                Obx(
-                  () => _buildMovieGrid(
-                    controller.recentlyWatched,
-                    controller.isSelectionMode.value,
-                  ),
-                ),
-                SizedBox(height: 18.h),
-                _buildSectionHeader("My Collection"),
-                SizedBox(height: 16.h),
-                Obx(
-                  () => _buildMovieGrid(
-                    controller.myCollection,
-                    controller.isSelectionMode.value,
-                  ),
-                ),
-                SizedBox(height: 100.h), // Space for bottom buttons
-              ],
+          RefreshIndicator(
+            onRefresh: () async {
+              await controller.refreshRecentlyWatched();
+              await controller.refreshMyCollection();
+            },
+            child: SingleChildScrollView(
+              controller: controller.scrollController,
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20.h),
+                  _buildSectionHeader("Recently Watched"),
+                  SizedBox(height: 15.h),
+                  Obx(() {
+                    if (controller.isRecentlyWatchedLoading.value &&
+                        controller.recentlyWatched.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (controller.recentlyWatchedError.isNotEmpty &&
+                        controller.recentlyWatched.isEmpty) {
+                      return CustomText(
+                        text: controller.recentlyWatchedError.value,
+                        color: Colors.red,
+                      );
+                    }
+                    if (controller.recentlyWatched.isEmpty) {
+                      return _buildEmptyState(
+                        "No recently watched items.",
+                        Icons.history,
+                      );
+                    }
+                    return _buildRecentlyWatchedGrid(
+                      controller.recentlyWatched,
+                      controller.isSelectionMode.value,
+                    );
+                  }),
+                  SizedBox(height: 18.h),
+                  _buildSectionHeader("My Collection"),
+                  SizedBox(height: 16.h),
+                  Obx(() {
+                    if (controller.isMyCollectionLoading.value &&
+                        controller.myCollection.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (controller.myCollectionError.isNotEmpty &&
+                        controller.myCollection.isEmpty) {
+                      return CustomText(
+                        text: controller.myCollectionError.value,
+                        color: Colors.red,
+                      );
+                    }
+                    if (controller.myCollection.isEmpty) {
+                      return _buildEmptyState(
+                        "Your collection is empty.",
+                        Icons.video_library_outlined,
+                      );
+                    }
+                    return Column(
+                      children: [
+                        _buildMyCollectionGrid(
+                          controller.myCollection,
+                          controller.isSelectionMode.value,
+                        ),
+                        if (controller.isMyCollectionPaginating.value)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20.h),
+                            child: const CircularProgressIndicator(),
+                          ),
+                      ],
+                    );
+                  }),
+                  SizedBox(height: 100.h), // Space for bottom buttons
+                ],
+              ),
             ),
           ),
           Obx(
@@ -87,7 +139,29 @@ class MyListScreen extends GetView<MyListController> {
     );
   }
 
-  Widget _buildMovieGrid(List<MovieItem> items, bool isSelectionMode) {
+  Widget _buildEmptyState(String message, IconData icon) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 40.h),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 48.sp, color: Colors.grey.shade600),
+          SizedBox(height: 12.h),
+          CustomText(
+            text: message,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey.shade400,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentlyWatchedGrid(
+      List<RecentlyWatchedData> items, bool isSelectionMode) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -100,17 +174,37 @@ class MyListScreen extends GetView<MyListController> {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return _buildMovieCard(item, isSelectionMode);
+        return _buildRecentlyWatchedCard(item, isSelectionMode);
       },
     );
   }
 
-  Widget _buildMovieCard(MovieItem item, bool isSelectionMode) {
+  Widget _buildMyCollectionGrid(
+      List<MyCollectionData> items, bool isSelectionMode) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 10.w,
+        mainAxisSpacing: 15.h,
+        childAspectRatio: 0.55,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return _buildMyCollectionCard(item, isSelectionMode);
+      },
+    );
+  }
+
+  Widget _buildRecentlyWatchedCard(
+      RecentlyWatchedData item, bool isSelectionMode) {
     return GestureDetector(
       onLongPress: controller.toggleSelectionMode,
       onTap: () {
         if (controller.isSelectionMode.value) {
-          controller.toggleItemSelected(item.id);
+          controller.toggleItemSelected(item.contentId.id);
         }
       },
       child: Column(
@@ -120,15 +214,19 @@ class MyListScreen extends GetView<MyListController> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: Image.asset(
-                  item.image,
-                  height: 150.h,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: item.contentId.poster.isNotEmpty
+                    ? Image.network(
+                        item.contentId.poster,
+                        height: 150.h,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            _buildPlaceholderImage(),
+                      )
+                    : _buildPlaceholderImage(),
               ),
               // Ribbon Badge
-              if (item.badge != null)
+              if (item.contentId.type.isNotEmpty)
                 Positioned(
                   top: 0,
                   right: 0,
@@ -138,21 +236,21 @@ class MyListScreen extends GetView<MyListController> {
                       vertical: 4.h,
                     ),
                     decoration: BoxDecoration(
-                      color: _getBadgeColor(item.badge!),
+                      color: _getBadgeColor(item.contentId.type),
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(8.r),
                         bottomLeft: Radius.circular(8.r),
                       ),
                     ),
                     child: CustomText(
-                      text: item.badge!,
+                      text: item.contentId.type.toUpperCase(),
                       fontSize: 8.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-              // Play Count
+              // Play Count / Progress
               Positioned(
                 bottom: 8.h,
                 right: 4.w,
@@ -161,7 +259,7 @@ class MyListScreen extends GetView<MyListController> {
                     Icon(Icons.play_arrow, color: Colors.white, size: 16.sp),
                     SizedBox(width: 2.w),
                     CustomText(
-                      text: item.views,
+                      text: "${item.completionPercentage.toInt()}%",
                       fontSize: 8.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -176,7 +274,7 @@ class MyListScreen extends GetView<MyListController> {
                   right: 8.w,
                   child: Obx(() {
                     final isSelected = controller.selectedItems.contains(
-                      item.id,
+                      item.contentId.id,
                     );
                     return Container(
                       padding: EdgeInsets.all(2.w),
@@ -199,20 +297,133 @@ class MyListScreen extends GetView<MyListController> {
           ),
           SizedBox(height: 8.h),
           CustomText(
-            text: item.title,
+            text: item.contentId.title,
             fontSize: 12.sp,
             fontWeight: FontWeight.w500,
             color: Color(0xFFE3E3E3),
             overflow: TextOverflow.ellipsis,
           ),
           CustomText(
-            text: item.subtitle,
+            text: "Watched", // Fallback subtitle
             fontSize: 12.sp,
             fontWeight: FontWeight.w400,
             color: Color(0xFFE3E3E3),
             overflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMyCollectionCard(MyCollectionData item, bool isSelectionMode) {
+    return GestureDetector(
+      onLongPress: controller.toggleSelectionMode,
+      onTap: () {
+        if (controller.isSelectionMode.value) {
+          controller.toggleItemSelected(item.itemId.id);
+        }
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.r),
+                child: item.itemId.poster.isNotEmpty
+                    ? Image.network(
+                        item.itemId.poster,
+                        height: 150.h,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            _buildPlaceholderImage(),
+                      )
+                    : _buildPlaceholderImage(),
+              ),
+              // Ribbon Badge
+              if (item.itemId.type.isNotEmpty)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 7.w,
+                      vertical: 4.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getBadgeColor(item.itemId.type),
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(8.r),
+                        bottomLeft: Radius.circular(8.r),
+                      ),
+                    ),
+                    child: CustomText(
+                      text: item.itemId.type.toUpperCase(),
+                      fontSize: 8.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              // Selection Overlay
+              if (isSelectionMode)
+                Positioned(
+                  top: 8.h,
+                  right: 8.w,
+                  child: Obx(() {
+                    final isSelected = controller.selectedItems.contains(
+                      item.itemId.id,
+                    );
+                    return Container(
+                      padding: EdgeInsets.all(2.w),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFFFFD700) // Golden/Yellow circle
+                            : Colors.black38,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.w),
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        color: isSelected ? Colors.white : Colors.transparent,
+                        size: 12.sp,
+                      ),
+                    );
+                  }),
+                ),
+            ],
+          ),
+          SizedBox(height: 8.h),
+          CustomText(
+            text: item.itemId.title,
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFFE3E3E3),
+            overflow: TextOverflow.ellipsis,
+          ),
+          CustomText(
+            text: "Collection", // Fallback subtitle
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w400,
+            color: Color(0xFFE3E3E3),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      height: 150.h,
+      width: double.infinity,
+      color: Colors.grey.shade800,
+      child: Center(
+        child: Icon(
+          Icons.image_not_supported,
+          color: Colors.grey.shade500,
+        ),
       ),
     );
   }
@@ -245,7 +456,10 @@ class MyListScreen extends GetView<MyListController> {
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: TextButton(
-                onPressed: controller.selectAll,
+                onPressed: () {
+                  controller.selectAllRecentlyWatched();
+                  controller.selectAllMyCollection();
+                },
                 child: CustomText(
                   text: "Select All",
                   fontSize: 16.sp,

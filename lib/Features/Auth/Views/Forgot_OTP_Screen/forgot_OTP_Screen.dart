@@ -13,11 +13,13 @@ import 'package:uremz100/Shared/Widgets/Custom_Text_Gray.dart';
 import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_consts.dart';
 import 'package:uremz100/Utils/app_images.dart';
+import '../../Controllers/auth_controller.dart';
 
 class ForgotOtpScreen extends StatelessWidget {
   ForgotOtpScreen({super.key});
   final pinController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final AuthController _authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +100,7 @@ class ForgotOtpScreen extends StatelessWidget {
                 Align(
                   alignment: Alignment.center,
                   child: CustomText(
-                    text: "We've Sent a Code to exa...@email.com",
+                    text: "We've Sent a Code to your email",
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
                     color: AppColors.white100,
@@ -178,7 +180,10 @@ class ForgotOtpScreen extends StatelessWidget {
                   text: "Submit OTP",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Get.toNamed(Routes.signinScreen);
+                      final args = Get.arguments as Map<String, dynamic>?;
+                      final flow = args?['flow'] ?? 'register';
+                      final email = args?['email'] ?? '';
+                      _authController.verifyOtp(email: email, otp: pinController.text, flow: flow);
                     }
                   },
                 ),

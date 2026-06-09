@@ -26,6 +26,21 @@ class StorageService extends GetxService {
     await _box.remove(AppConstants.tokenKey);
   }
 
+  /// Save refresh token
+  Future<void> saveRefreshToken(String token) async {
+    await _box.write(AppConstants.refreshTokenKey, token);
+  }
+
+  /// Get refresh token
+  String? getRefreshToken() {
+    return _box.read<String>(AppConstants.refreshTokenKey);
+  }
+
+  /// Clear refresh token
+  Future<void> clearRefreshToken() async {
+    await _box.remove(AppConstants.refreshTokenKey);
+  }
+
   /// Generic save method
   Future<void> writeData(String key, dynamic value) async {
     await _box.write(key, value);

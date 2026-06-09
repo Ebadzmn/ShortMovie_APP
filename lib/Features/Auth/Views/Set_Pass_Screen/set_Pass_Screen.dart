@@ -10,6 +10,7 @@ import 'package:uremz100/Shared/Widgets/Custom_Text_Gray.dart';
 import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_consts.dart';
 import 'package:uremz100/Utils/app_images.dart';
+import '../../Controllers/auth_controller.dart';
 
 class SetPassScreen extends StatelessWidget {
   SetPassScreen({super.key});
@@ -17,6 +18,7 @@ class SetPassScreen extends StatelessWidget {
   final TextEditingController NewPasswordController = TextEditingController();
   final TextEditingController ConfromPasswordController =
       TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -164,7 +166,7 @@ class SetPassScreen extends StatelessWidget {
                   text: "Reset Password",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // Navigate to success or sign in
+                      _authController.resetPassword(newPassword: NewPasswordController.text);
                     }
                   },
                 ),
