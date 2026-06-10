@@ -22,9 +22,17 @@ class MyListScreen extends GetView<MyListController> {
       appBar: CustomAppBar(
         title: "My Collection",
         onBackPressed: () {
-          final NavigationController navController =
-              Get.find<NavigationController>();
-          navController.changeIndex(0);
+          try {
+            final NavigationController navController =
+                Get.find<NavigationController>();
+            if (navController.currentIndex.value == 2) {
+              navController.changeIndex(0);
+            } else {
+              Get.back();
+            }
+          } catch (e) {
+            Get.back();
+          }
         },
         actions: [
           Padding(

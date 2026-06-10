@@ -52,41 +52,60 @@ class ShortsScreen extends StatelessWidget {
       child: Scaffold(
         body: Stack(
           children: [
-            PageView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: controller.shortsList.length,
-              onPageChanged: (index) => controller.currentIndex.value = index,
-              itemBuilder: (context, index) {
-                final shorts = controller.shortsList[index];
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    // Background Video
-                    ShortsVideoPlayer(videoUrl: shorts.videoUrl, index: index),
-
-                    // Overlay Content (Conditional based on Mode)
-                    Obx(() {
-                      final isFullMode = controller.isFullSeriesMode.value;
-                      return Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          if (!isFullMode)
-                            ShortsDefaultOverlay(
-                              shorts: shorts,
-                              controller: controller,
-                            )
-                          else
-                            ShortsFullSeriesOverlay(
-                              controller: controller,
-                              shorts: shorts,
-                            ),
-                        ],
-                      );
-                    }),
-                  ],
+            Obx(() {
+              if (controller.isInitialLoading.value && controller.shortsList.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (controller.shortsList.isEmpty) {
+                return const Center(
+                  child: CustomText(
+                    text: "No Shorts Available",
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
                 );
-              },
-            ),
+              }
+              return PageView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: controller.shortsList.length,
+                onPageChanged: (index) => controller.currentIndex.value = index,
+                itemBuilder: (context, index) {
+                  final shorts = controller.shortsList[index];
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      // Background Video
+                      ShortsVideoPlayer(
+                        videoUrl: shorts.videoUrl, 
+                        posterUrl: shorts.poster,
+                        id: shorts.id,
+                        index: index,
+                      ),
+
+                      // Overlay Content (Conditional based on Mode)
+                      Obx(() {
+                        final isFullMode = controller.isFullSeriesMode.value;
+                        return Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            if (!isFullMode)
+                              ShortsDefaultOverlay(
+                                shorts: shorts,
+                                controller: controller,
+                              )
+                            else
+                              ShortsFullSeriesOverlay(
+                                controller: controller,
+                                shorts: shorts,
+                              ),
+                          ],
+                        );
+                      }),
+                    ],
+                  );
+                },
+              );
+            }),
 
             // Episode Selection Popup
             Obx(

@@ -98,11 +98,12 @@ class ShortsFullSeriesOverlay extends StatelessWidget {
           bottom: 150.h,
           child: Column(
             children: [
-              ShortsSideButton(
+              Obx(() => ShortsSideButton(
                 iconPath: AppIcons.save_icon,
-                label: "359K",
-                onTap: () => controller.toggleBookmark(),
-              ),
+                label: controller.savedIds.contains(shorts.id) ? "Saved" : "List",
+                color: controller.savedIds.contains(shorts.id) ? null : Colors.white,
+                onTap: () => controller.addToCollection(shorts.id),
+              )),
               SizedBox(height: 16.h),
               ShortsSideButton(
                 iconPath: AppIcons.episode_icon,

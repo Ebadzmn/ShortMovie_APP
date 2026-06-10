@@ -9,11 +9,15 @@ import '../Controller/Shorts_Video_Controller.dart';
 
 class ShortsVideoPlayer extends StatefulWidget {
   final String videoUrl;
+  final String posterUrl;
+  final String id;
   final int index;
 
   const ShortsVideoPlayer({
     super.key,
     required this.videoUrl,
+    required this.posterUrl,
+    required this.id,
     required this.index,
   });
 
@@ -36,29 +40,28 @@ class _ShortsVideoPlayerState extends State<ShortsVideoPlayer>
     // Get or create the video controller for this URL
     controller = Get.put(
       ShortsVideoController(widget.videoUrl),
-      tag: widget.videoUrl,
+      tag: widget.id,
     );
 
-    // Listen to page swipes: pause non-active, resume active
+    // Listen to page swipes: dispose when item leaves viewport, do not auto-play
     try {
       final shortsController = Get.find<ShortsController>();
       _pageWorker = ever(shortsController.currentIndex, (idx) {
         if (controller.isClosed) return;
-        if (idx == widget.index) {
-          controller.playVideo();
-        } else {
-          controller.pauseVideo();
+        if (idx != widget.index) {
+          // Dispose controller when item leaves viewport
+          controller.disposeVideo();
         }
       });
     } catch (_) {
-      // ShortsController not found — auto-play from controller handles it
+      // ShortsController not found
     }
   }
 
   @override
   void dispose() {
     _pageWorker?.dispose();
-    Get.delete<ShortsVideoController>(tag: widget.videoUrl);
+    Get.delete<ShortsVideoController>(tag: widget.id);
     super.dispose();
   }
 
@@ -66,47 +69,92 @@ class _ShortsVideoPlayerState extends State<ShortsVideoPlayer>
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     return Obx(() {
-      if (controller.isError.value) {
+      if (controller.hasError.value) {
         return const Center(
           child: Icon(Icons.error, color: Colors.white, size: 40),
         );
       }
 
-      if (!controller.isInitialized.value) {
-        return const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        );
-      }
-
       return GestureDetector(
         onTap: () => controller.togglePlayPause(),
+        onDoubleTapDown: (details) {
+          final screenWidth = MediaQuery.of(context).size.width;
+          if (details.globalPosition.dx < screenWidth / 2) {
+            controller.seekBy(-10); // Seek backward 10s
+          } else {
+            controller.seekBy(10); // Seek forward 10s
+          }
+        },
+        onLongPressStart: (_) => controller.setPlaybackSpeed(2.0),
+        onLongPressEnd: (_) => controller.setPlaybackSpeed(1.0),
         child: Stack(
           alignment: Alignment.center,
+          fit: StackFit.expand,
           children: [
+            // Video Player or Poster
             Positioned.fill(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: controller.videoPlayerController.value.size.width,
-                  height: controller.videoPlayerController.value.size.height,
-                  child: VideoPlayer(controller.videoPlayerController),
-                ),
-              ),
+              child: controller.isInitialized.value && controller.videoPlayerController != null
+                  ? FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: controller.videoPlayerController!.value.size.width,
+                        height: controller.videoPlayerController!.value.size.height,
+                        child: VideoPlayer(controller.videoPlayerController!),
+                      ),
+                    )
+                  : Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (widget.posterUrl.isNotEmpty)
+                          Image.network(
+                            widget.posterUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(color: Colors.black),
+                          )
+                        else
+                          Container(color: Colors.black),
+                        // Dark Gradient Overlay for text readability
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.6),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
             ),
-            if (!controller.isPlaying.value)
-              Container(
-                width: 90.w,
-                height: 90.w,
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.45),
-                  shape: BoxShape.circle,
-                ),
-                padding: EdgeInsets.all(28.r),
-                child: SvgPicture.asset(
-                  AppIcons.play_icon,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
+
+            // Loading Indicator
+            if (controller.isLoading.value)
+              const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+
+            // Play Button
+            if (!controller.isPlaying.value && !controller.isLoading.value)
+              Center(
+                child: Container(
+                  width: 48.w,
+                  height: 48.w,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.55),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: SvgPicture.asset(
+                    AppIcons.play_icon,
+                    width: 18.w,
+                    height: 18.w,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
               ),

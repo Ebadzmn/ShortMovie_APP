@@ -57,7 +57,12 @@ class ShortsFullSeriesScreen extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     // Background Video
-                    ShortsVideoPlayer(videoUrl: shorts.videoUrl, index: index),
+                    ShortsVideoPlayer(
+                      videoUrl: shorts.videoUrl, 
+                      posterUrl: shorts.poster,
+                      id: shorts.id,
+                      index: index,
+                    ),
             
                     // Force Full Series Overlay
                     ShortsFullSeriesOverlay(

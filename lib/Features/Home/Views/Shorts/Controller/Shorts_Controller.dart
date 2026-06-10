@@ -11,11 +11,17 @@ import 'Shorts_Video_Controller.dart';
 import 'package:uremz100/core/services/storage_service.dart';
 
 import '../More/more_screen.dart';
+import 'dart:async';
+import 'package:uremz100/Data/Datasources/Remote/shorts_remote_datasource.dart';
+import 'package:uremz100/Data/Repositories/shorts_repository.dart';
+import 'package:uremz100/Domain/UseCases/get_shorts_usecase.dart';
+import 'package:uremz100/Domain/UseCases/track_short_view_usecase.dart';
+import 'package:uremz100/Domain/UseCases/add_to_collection_usecase.dart';
 
 class ShortsController extends GetxController {
   var shortsList = <ShortsModel>[].obs;
   var isFav = false.obs;
-  var isBookmarked = true.obs;
+  var savedIds = <String>{}.obs;
   var showLoginPopup = false.obs;
   var showMoreMenu = false.obs;
   var currentEpisode = 4.obs;
@@ -29,6 +35,21 @@ class ShortsController extends GetxController {
   var isFullSeriesMode = false.obs;
   var currentIndex = 0.obs;
   var showRewardIcon = true.obs;
+
+  // Pagination State
+  String? nextCursor;
+  bool hasNextPage = true;
+  var isPaginationLoading = false.obs;
+  var isInitialLoading = false.obs;
+
+  // View Tracking State
+  Set<String> trackedViews = {};
+  Timer? _viewTimer;
+
+  // Use Cases
+  late final GetShortsUseCase _getShortsUseCase;
+  late final TrackShortViewUseCase _trackShortViewUseCase;
+  late final AddToCollectionUseCase _addToCollectionUseCase;
 
   void showMoreDetailsBottomSheet() {
     pauseCurrentVideo();
@@ -44,61 +65,127 @@ class ShortsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    shortsList.addAll([
-      ShortsModel(
-        videoUrl:
-            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
-        title: "The Scars You Carved Into Me...",
-        description:
-            "Pearl Zane dates Ivan Reed, a wealthy heir pretending to be poor. When he falls in love with her, he faces a difficult choice: tell her the truth and risk losing her, or keep his secret and live a lie forever. As their relationship deepens, secrets from Ivan's past begin to surface, threatening everything they've built together. This story of love, betrayal, and redemption will keep you on the edge of your seat until the very last episode.",
-        profileImage: AppImages.profile_image,
-        episode: "11",
-        season: "1",
-        tags: ["Hot", "Secret Baby", "Winning Her Back"],
-      ),
-      ShortsModel(
-        videoUrl:
-            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
-        title: "Elephants Dream",
-        description:
-            "A surreal journey through a mechanical world filled with curious characters and wonders.",
-        profileImage: AppImages.profile_image,
-        episode: "2",
-        season: "1",
-        tags: ["Action", "Sci-Fi"],
-      ),
-      ShortsModel(
-        videoUrl:
-            "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
-        title: "For Bigger Blazes",
-        description:
-            "Action-packed stunts and fire-breathing performances that will leave you breathless.",
-        profileImage: AppImages.profile_image,
-        episode: "3",
-        season: "1",
-        tags: ["Stunts", "Hot"],
-      ),
-      ShortsModel(
-        videoUrl: "https://media.w3.org/2010/05/bunny/trailer.mp4",
-        title: "For Bigger Escapes",
-        description:
-            "Thrill-seekers take on impossible challenges to escape from high-stakes situations.",
-        profileImage: AppImages.profile_image,
-        episode: "4",
-        season: "1",
-        tags: ["Thriller", "Action"],
-      ),
-      ShortsModel(
-        videoUrl: "https://media.w3.org/2010/05/bunny/movie.mp4",
-        title: "For Bigger Fun",
-        description:
-            "A lighthearted comedy about a group of friends who find humor in life's most unexpected moments.",
-        profileImage: AppImages.profile_image,
-        episode: "5",
-        season: "1",
-        tags: ["Comedy", "Fun"],
-      ),
-    ]);
+    
+    // Initialize Use Cases
+    final dataSource = ShortsRemoteDataSource();
+    final repository = ShortsRepository(dataSource);
+    _getShortsUseCase = GetShortsUseCase(repository);
+    _trackShortViewUseCase = TrackShortViewUseCase(repository);
+    _addToCollectionUseCase = AddToCollectionUseCase(repository);
+
+    fetchShorts();
+
+    // Listen to index changes to trigger view tracking
+    ever(currentIndex, (int index) {
+      if (shortsList.isNotEmpty && index < shortsList.length) {
+        _startViewTracking(shortsList[index].id);
+        
+        // Trigger load more if we are nearing the end
+        if (index >= shortsList.length - 2) {
+          loadMoreShorts();
+        }
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    _viewTimer?.cancel();
+    super.onClose();
+  }
+
+  Future<void> fetchShorts() async {
+    try {
+      isInitialLoading(true);
+      final response = await _getShortsUseCase.execute(limit: 5);
+      shortsList.assignAll(response.data);
+      if (response.meta != null) {
+        nextCursor = response.meta!.nextCursor;
+        hasNextPage = response.meta!.hasNextPage;
+      }
+      if (shortsList.isNotEmpty) {
+        _startViewTracking(shortsList.first.id);
+      }
+    } catch (e) {
+      debugPrint("Error fetching shorts: $e");
+    } finally {
+      isInitialLoading(false);
+    }
+  }
+
+  Future<void> loadMoreShorts() async {
+    if (!hasNextPage || isPaginationLoading.value || isInitialLoading.value) return;
+
+    try {
+      isPaginationLoading(true);
+      final response = await _getShortsUseCase.execute(limit: 5, cursor: nextCursor);
+      shortsList.addAll(response.data);
+      if (response.meta != null) {
+        nextCursor = response.meta!.nextCursor;
+        hasNextPage = response.meta!.hasNextPage;
+      }
+    } catch (e) {
+      debugPrint("Error loading more shorts: $e");
+    } finally {
+      isPaginationLoading(false);
+    }
+  }
+
+  void _startViewTracking(String shortId) {
+    _viewTimer?.cancel();
+    
+    // Only track if not already tracked
+    if (trackedViews.contains(shortId)) return;
+
+    _viewTimer = Timer(const Duration(seconds: 3), () {
+      trackView(shortId);
+    });
+  }
+
+  Future<void> trackView(String shortId) async {
+    if (trackedViews.contains(shortId)) return;
+    
+    trackedViews.add(shortId); // Add optimistic to prevent multiple requests
+    final success = await _trackShortViewUseCase.execute(shortId);
+    if (!success) {
+      trackedViews.remove(shortId); // Revert if failed
+    }
+  }
+
+  Future<void> addToCollection(String shortId) async {
+    if (!isLoggedIn) {
+      showLoginPopup.value = true;
+      return;
+    }
+
+    try {
+      // Show loading (you can use a dialog or local state, here we just toggle locally if optimistic is needed)
+      // We will actually just toggle it for now, and show a snackbar on success
+      savedIds.add(shortId); 
+      
+      final success = await _addToCollectionUseCase.execute(shortId);
+      if (success) {
+        Get.snackbar(
+          "Success", 
+          "Added to Collection Successfully",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.black54,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+      } else {
+        savedIds.remove(shortId); // Revert
+        Get.snackbar(
+          "Error", 
+          "Failed to add to collection",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      savedIds.remove(shortId); // Revert
+    }
   }
 
   void toggleEpisodePopup() {
@@ -155,13 +242,6 @@ class ShortsController extends GetxController {
     }
   }
 
-  void toggleBookmark() {
-    isBookmarked.value = !isBookmarked.value;
-    if (isBookmarked.value && !isLoggedIn) {
-      showLoginPopup.value = true;
-    }
-  }
-
   void toggleLoginPopup() {
     showLoginPopup.value = !showLoginPopup.value;
   }
@@ -186,9 +266,9 @@ class ShortsController extends GetxController {
 
   void pauseCurrentVideo() {
     try {
-      final videoUrl = shortsList[currentIndex.value].videoUrl;
-      if (Get.isRegistered<ShortsVideoController>(tag: videoUrl)) {
-        final videoController = Get.find<ShortsVideoController>(tag: videoUrl);
+      final shortId = shortsList[currentIndex.value].id;
+      if (Get.isRegistered<ShortsVideoController>(tag: shortId)) {
+        final videoController = Get.find<ShortsVideoController>(tag: shortId);
         videoController.pauseVideo();
       }
     } catch (e) {
@@ -198,9 +278,9 @@ class ShortsController extends GetxController {
 
   void playCurrentVideo() {
     try {
-      final videoUrl = shortsList[currentIndex.value].videoUrl;
-      if (Get.isRegistered<ShortsVideoController>(tag: videoUrl)) {
-        final videoController = Get.find<ShortsVideoController>(tag: videoUrl);
+      final shortId = shortsList[currentIndex.value].id;
+      if (Get.isRegistered<ShortsVideoController>(tag: shortId)) {
+        final videoController = Get.find<ShortsVideoController>(tag: shortId);
         videoController.playVideo();
       }
     } catch (e) {
@@ -230,9 +310,9 @@ class ShortsController extends GetxController {
     Get.back();
   }
 
-  void showPlaybackSpeedBottomSheet(String videoUrl) {
-    if (!Get.isRegistered<ShortsVideoController>(tag: videoUrl)) return;
-    final videoController = Get.find<ShortsVideoController>(tag: videoUrl);
+  void showPlaybackSpeedBottomSheet(String shortId) {
+    if (!Get.isRegistered<ShortsVideoController>(tag: shortId)) return;
+    final videoController = Get.find<ShortsVideoController>(tag: shortId);
     final speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
 
     Get.bottomSheet(

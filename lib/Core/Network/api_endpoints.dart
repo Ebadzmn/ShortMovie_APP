@@ -16,4 +16,8 @@ class ApiEndpoints {
   // My List endpoints
   static const String recentlyWatched = '/recently-watched';
   static const String myCollection = '/my-collection';
+
+  // Shorts endpoints
+  static const String shorts = '/shorts';
+  static String trackShortView(String shortId) => '/shorts/$shortId/view';
 }
