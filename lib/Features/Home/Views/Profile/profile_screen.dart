@@ -8,14 +8,13 @@ import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_icons.dart';
 import 'package:uremz100/Utils/app_images.dart';
 import 'package:uremz100/core/services/storage_service.dart';
+import 'Controller/profile_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  @override
   Widget build(BuildContext context) {
-    final token = Get.find<StorageService>().getToken();
-    final bool isLoggedIn = token != null && token.isNotEmpty;
+    final controller = Get.put(ProfileController());
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -25,7 +24,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             SizedBox(height: 60.h),
             // Profile Header
-            Row(
+            Obx(() => Row(
               children: [
                 CircleAvatar(
                   radius: 26.r,
@@ -36,22 +35,21 @@ class ProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
-                      text: isLoggedIn ? "Md Ibrahim Khalil" : "Guest User",
+                      text: controller.isLoggedIn.value ? controller.userName.value : "Guest User",
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
                     ),
                     SizedBox(height: 5.h),
-                    if (isLoggedIn)
-                      CustomText(
-                        text: "UID: 637676603",
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFD4D4D4),
-                      ),
+                    CustomText(
+                      text: controller.isLoggedIn.value ? "UID: ${controller.uid.value}" : "ID: ${controller.guestId.value}",
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFFD4D4D4),
+                    ),
                   ],
                 ),
               ],
-            ),
+            )),
             SizedBox(height: 34.h),
 
             // VIP Benefits Card
@@ -204,21 +202,13 @@ class ProfileScreen extends StatelessWidget {
               "My List",
               onTap: () => Get.toNamed(Routes.myListScreen),
             ),
-            _buildMenuItem(
-              AppIcons.download_icon,
-              "Offline Download",
-              // onTap: () => Get.toNamed(Routes.settingsScreen),
-            ),
+
             _buildMenuItem(
               AppIcons.faqs_icon,
               "FAQs",
               //onTap: () => Get.toNamed(Routes.faqsScreen()),
             ),
-            _buildMenuItem(
-              AppIcons.language_icon,
-              "Language",
-              //onTap: () => Get.toNamed(Routes.settingsScreen),
-            ),
+
             _buildMenuItem(
               AppIcons.setting_icon,
               "Settings",

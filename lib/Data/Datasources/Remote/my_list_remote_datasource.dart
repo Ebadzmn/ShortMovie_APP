@@ -23,4 +23,13 @@ class MyListRemoteDataSource {
       },
     );
   }
+
+  Future<ApiResponse<dynamic>> removeBulkCollection(List<String> itemIds) async {
+    return await _networkCaller.deleteRequest(
+      ApiEndpoints.bulkRemoveCollection,
+      data: {
+        "itemIds": itemIds,
+      },
+    );
+  }
 }

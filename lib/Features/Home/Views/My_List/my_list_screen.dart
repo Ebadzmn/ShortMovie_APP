@@ -123,7 +123,7 @@ class MyListScreen extends GetView<MyListController> {
                       ],
                     );
                   }),
-                  SizedBox(height: 100.h), // Space for bottom buttons
+                  SizedBox(height: 180.h), // Space for bottom buttons
                 ],
               ),
             ),
@@ -169,7 +169,9 @@ class MyListScreen extends GetView<MyListController> {
   }
 
   Widget _buildRecentlyWatchedGrid(
-      List<RecentlyWatchedData> items, bool isSelectionMode) {
+    List<RecentlyWatchedData> items,
+    bool isSelectionMode,
+  ) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -188,7 +190,9 @@ class MyListScreen extends GetView<MyListController> {
   }
 
   Widget _buildMyCollectionGrid(
-      List<MyCollectionData> items, bool isSelectionMode) {
+    List<MyCollectionData> items,
+    bool isSelectionMode,
+  ) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -207,7 +211,9 @@ class MyListScreen extends GetView<MyListController> {
   }
 
   Widget _buildRecentlyWatchedCard(
-      RecentlyWatchedData item, bool isSelectionMode) {
+    RecentlyWatchedData item,
+    bool isSelectionMode,
+  ) {
     return GestureDetector(
       onLongPress: controller.toggleSelectionMode,
       onTap: () {
@@ -428,10 +434,7 @@ class MyListScreen extends GetView<MyListController> {
       width: double.infinity,
       color: Colors.grey.shade800,
       child: Center(
-        child: Icon(
-          Icons.image_not_supported,
-          color: Colors.grey.shade500,
-        ),
+        child: Icon(Icons.image_not_supported, color: Colors.grey.shade500),
       ),
     );
   }
@@ -454,51 +457,85 @@ class MyListScreen extends GetView<MyListController> {
       bottom: 20.h,
       left: 16.w,
       right: 16.w,
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              height: 48.h,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.orange100),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  controller.selectAllRecentlyWatched();
-                  controller.selectAllMyCollection();
-                },
-                child: CustomText(
-                  text: "Select All",
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: const Color(
+            0xFF1E1E1E,
+          ).withOpacity(0.95), // Elegant dark background
+          borderRadius: BorderRadius.circular(16.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
-          ),
-          SizedBox(width: 15.w),
-          Expanded(
-            child: SizedBox(
-              height: 48.h,
-              child: ElevatedButton(
-                onPressed: controller.removeSelected,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.orange100,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: 44.h,
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.orange100, width: 1.5),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: TextButton(
+                  onPressed: controller.toggleSelectAll,
+                  style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  child: Obx(
+                    () => CustomText(
+                      text: controller.isAllSelected
+                          ? "Deselect All"
+                          : "Select All",
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                child: CustomText(
-                  text: "Remove",
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              ),
+            ),
+            SizedBox(width: 15.w),
+            Expanded(
+              child: Obx(
+                () => SizedBox(
+                  height: 48.h,
+                  child: ElevatedButton(
+                    onPressed: controller.selectedItems.isNotEmpty
+                        ? controller.removeSelected
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: controller.selectedItems.isNotEmpty
+                          ? AppColors.orange100
+                          : Colors.grey.shade800,
+                      disabledBackgroundColor: Colors.grey.shade800,
+                      elevation: controller.selectedItems.isNotEmpty ? 4 : 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                    child: CustomText(
+                      text: controller.selectedItems.isNotEmpty
+                          ? "Remove (${controller.selectedItems.length})"
+                          : "Remove",
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                      color: controller.selectedItems.isNotEmpty
+                          ? Colors.white
+                          : Colors.grey.shade500,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

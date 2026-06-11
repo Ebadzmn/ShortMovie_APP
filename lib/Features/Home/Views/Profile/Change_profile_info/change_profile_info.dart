@@ -78,16 +78,7 @@ class _ChangeProfileInfoScreenState extends State<ChangeProfileInfoScreen> {
             ),
             SizedBox(height: 16.h),
 
-            // Email Field
-            _buildLabel("Email"),
-            SizedBox(height: 8.h),
-            Customtextfield(
-              controller: controller.emailController.value,
-              hintText: "Enter your email",
-              obscureText: false,
-              textInputType: TextInputType.emailAddress,
-            ),
-            SizedBox(height: 16.h),
+
 
             // Gender Selector
             _buildLabel("Select Gender"),
@@ -106,7 +97,11 @@ class _ChangeProfileInfoScreenState extends State<ChangeProfileInfoScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Get.back(),
+                onPressed: () {
+                  if (!controller.isLoading.value) {
+                    controller.updateProfile();
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.orange100,
                   shape: RoundedRectangleBorder(
@@ -114,10 +109,21 @@ class _ChangeProfileInfoScreenState extends State<ChangeProfileInfoScreen> {
                   ),
                   padding: EdgeInsets.symmetric(vertical: 15.h),
                 ),
-                child: CustomText(
-                  text: "Save",
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
+                child: Obx(
+                  () => controller.isLoading.value
+                      ? SizedBox(
+                          height: 20.sp,
+                          width: 20.sp,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : CustomText(
+                          text: "Save",
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
                 ),
               ),
             ),

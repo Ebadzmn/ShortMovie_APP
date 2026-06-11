@@ -8,10 +8,12 @@ import 'package:uremz100/Data/Models/recently_watched_model.dart';
 import 'package:uremz100/Data/Repositories/my_list_repository.dart';
 import 'package:uremz100/Domain/UseCases/get_my_collection_usecase.dart';
 import 'package:uremz100/Domain/UseCases/get_recently_watched_usecase.dart';
+import 'package:uremz100/Domain/UseCases/remove_bulk_collection_usecase.dart';
 
 class MyListController extends GetxController {
   late final GetRecentlyWatchedUseCase _getRecentlyWatchedUseCase;
   late final GetMyCollectionUseCase _getMyCollectionUseCase;
+  late final RemoveBulkCollectionUseCase _removeBulkCollectionUseCase;
 
   // Observables for Recently Watched
   final recentlyWatched = <RecentlyWatchedData>[].obs;
@@ -40,6 +42,7 @@ class MyListController extends GetxController {
     final repository = MyListRepository(remoteDataSource);
     _getRecentlyWatchedUseCase = GetRecentlyWatchedUseCase(repository);
     _getMyCollectionUseCase = GetMyCollectionUseCase(repository);
+    _removeBulkCollectionUseCase = RemoveBulkCollectionUseCase(repository);
 
     scrollController.addListener(_onScroll);
 
@@ -161,30 +164,53 @@ class MyListController extends GetxController {
     }
   }
 
-  void selectAllRecentlyWatched() {
-    final allIds = recentlyWatched.map((e) => e.contentId.id).toSet();
-    if (selectedItems.length == allIds.length) {
+  bool get isAllSelected {
+    final totalItems = recentlyWatched.length + myCollection.length;
+    return totalItems > 0 && selectedItems.length == totalItems;
+  }
+
+  void toggleSelectAll() {
+    if (isAllSelected) {
       selectedItems.clear();
     } else {
-      selectedItems.addAll(allIds);
+      final allRecent = recentlyWatched.map((e) => e.contentId.id).toSet();
+      final allCollection = myCollection.map((e) => e.itemId.id).toSet();
+      selectedItems.addAll(allRecent);
+      selectedItems.addAll(allCollection);
     }
   }
 
-  void selectAllMyCollection() {
-    final allIds = myCollection.map((e) => e.itemId.id).toSet();
-    if (selectedItems.length == allIds.length) {
-      selectedItems.clear();
-    } else {
-      selectedItems.addAll(allIds);
-    }
-  }
+  Future<void> removeSelected() async {
+    if (selectedItems.isEmpty) return;
 
-  void removeSelected() {
-    // Implement API call to remove items if backend supports it
-    // For now, we just remove them locally
-    recentlyWatched.removeWhere((item) => selectedItems.contains(item.contentId.id));
-    myCollection.removeWhere((item) => selectedItems.contains(item.itemId.id));
-    selectedItems.clear();
-    isSelectionMode.value = false;
+    try {
+      Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+      
+      final response = await _removeBulkCollectionUseCase.execute(selectedItems.toList());
+      
+      Get.back(); // close dialog
+      
+      if (response.success) {
+        // Remove locally
+        recentlyWatched.removeWhere((item) => selectedItems.contains(item.contentId.id));
+        myCollection.removeWhere((item) => selectedItems.contains(item.itemId.id));
+        
+        selectedItems.clear();
+        isSelectionMode.value = false;
+        
+        Get.snackbar(
+          "Success", 
+          response.message.isNotEmpty ? response.message : "Items removed successfully", 
+          snackPosition: SnackPosition.BOTTOM, 
+          backgroundColor: Colors.green, 
+          colorText: Colors.white
+        );
+      } else {
+        Get.snackbar("Error", response.message.isNotEmpty ? response.message : "Failed to remove items", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+      }
+    } catch (e) {
+      Get.back(); // close dialog
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+    }
   }
 }

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:uremz100/Data/Repositories/user_profile_repository.dart';
+import 'package:uremz100/Shared/Widgets/Custom_snakbar.dart';
 
 class ChangeProfileInfoController extends GetxController {
   final nameController = TextEditingController().obs;
-  final emailController = TextEditingController().obs;
 
   final selectedGender = "Male".obs;
   final genderList = ["Male", "Female", "Other"];
 
   final selectedDate = "DD.MM.YY".obs;
+  
+  final isLoading = false.obs;
+  final _userProfileRepo = Get.find<UserProfileRepo>();
 
   void updateGender(String? value) {
     if (value != null) {
@@ -45,6 +49,47 @@ class ChangeProfileInfoController extends GetxController {
 
     if (pickedDate != null) {
       selectedDate.value = DateFormat('dd.MM.yyyy').format(pickedDate);
+    }
+  }
+
+  Future<void> updateProfile() async {
+    final name = nameController.value.text.trim();
+    if (name.isEmpty) {
+      showCustomSnackBar("Name cannot be empty", isError: true);
+      return;
+    }
+
+    if (selectedDate.value == "DD.MM.YY") {
+      showCustomSnackBar("Please select a valid date of birth", isError: true);
+      return;
+    }
+
+    DateTime parsedDate;
+    try {
+      parsedDate = DateFormat('dd.MM.yyyy').parse(selectedDate.value);
+    } catch (e) {
+      showCustomSnackBar("Invalid date of birth format", isError: true);
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      final response = await _userProfileRepo.updateProfile(
+        name: name,
+        gender: selectedGender.value.toUpperCase(),
+        dateOfBirth: parsedDate.toUtc().toIso8601String(),
+      );
+
+      if (response.isSuccess) {
+        showCustomSnackBar("Profile updated successfully", isError: false);
+        Get.back();
+      } else {
+        showCustomSnackBar(response.message ?? "Failed to update profile", isError: true);
+      }
+    } catch (e) {
+      showCustomSnackBar(e.toString(), isError: true);
+    } finally {
+      isLoading.value = false;
     }
   }
 }

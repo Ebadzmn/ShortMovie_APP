@@ -138,37 +138,7 @@ class SigninScreen extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 18.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Divider(thickness: 1, color: AppColors.gray300),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w),
-                      child: CustomTextgray(
-                        text: "or continue with",
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.gray300,
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(thickness: 1, color: AppColors.gray300),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-                CustomButtonIcon(
-                  text: "Continue with Google",
-                  iconWidget: SvgPicture.asset(AppIcons.google_icon),
-                  onPressed: () {},
-                ),
-                SizedBox(height: 20.h),
-                CustomButtonIcon(
-                  text: "Continue with Apple",
-                  iconWidget: SvgPicture.asset(AppIcons.apple_icon),
-                  onPressed: () {},
-                ),
+
                 SizedBox(height: 45.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -94,4 +94,18 @@ class AuthRepository {
       },
     );
   }
+
+  /// ===================== RESTORE ACCOUNT =====================
+  Future<ApiResponse<dynamic>> restoreAccount({
+    required String email,
+    required String password,
+  }) async {
+    return await _networkCaller.postRequest(
+      ApiEndpoints.restoreAccount,
+      data: {
+        "email": email,
+        "password": password,
+      },
+    );
+  }
 }

@@ -6,6 +6,9 @@ import 'package:uremz100/Shared/Widgets/Custom_AppBar.dart';
 import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
 import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_images.dart';
+import 'package:uremz100/Shared/Widgets/LoginPopup.dart';
+import 'package:uremz100/core/services/storage_service.dart';
+import 'package:uremz100/Features/Home/Views/Profile/Controller/profile_controller.dart';
 import '../../../../Auth/Controllers/auth_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -14,6 +17,7 @@ class SettingsScreen extends StatelessWidget {
   final isPasswordVisible = false.obs;
   final isAccountExpanded = false.obs;
   final AuthController _authController = Get.put(AuthController());
+  final _profileController = Get.put(ProfileController());
 
   @override
   Widget build(BuildContext context) {
@@ -37,18 +41,18 @@ class SettingsScreen extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomText(
-                      text: "Md Ibrahim Khalil",
+                    Obx(() => CustomText(
+                      text: _profileController.isLoggedIn.value ? _profileController.userName.value : "Guest User",
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
-                    ),
+                    )),
                     SizedBox(height: 5.h),
-                    CustomText(
-                      text: "UID: 637676603",
+                    Obx(() => CustomText(
+                      text: _profileController.isLoggedIn.value ? "UID: ${_profileController.uid.value}" : "ID: ${_profileController.guestId.value}",
                       fontSize: 10.sp,
                       fontWeight: FontWeight.w500,
                       color: Color(0xFFD4D4D4),
-                    ),
+                    )),
                   ],
                 ),
               ],
@@ -64,7 +68,24 @@ class SettingsScreen extends StatelessWidget {
                     "Account Info",
                     isExpandable: true,
                     isExpanded: isAccountExpanded.value,
-                    onTap: () => isAccountExpanded.toggle(),
+                    onTap: () {
+                      final token = Get.find<StorageService>().getToken();
+                      if (token == null || token.isEmpty) {
+                        Get.dialog(
+                          LoginPopup(
+                            onSignIn: () {
+                              Get.back();
+                              Get.toNamed(Routes.signinScreen);
+                            },
+                            onClose: () => Get.back(),
+                          ),
+                          barrierDismissible: true,
+                          barrierColor: Colors.black.withOpacity(0.5),
+                        );
+                      } else {
+                        isAccountExpanded.toggle();
+                      }
+                    },
                   ),
                   AnimatedSize(
                     duration: const Duration(milliseconds: 300),
@@ -76,6 +97,10 @@ class SettingsScreen extends StatelessWidget {
                                 "Change Profile Info",
                                 onTap: () =>
                                     Get.toNamed(Routes.changeProfileInfo),
+                              ),
+                              _buildSettingItem(
+                                "Change Email",
+                                onTap: () => Get.toNamed(Routes.changeEmail),
                               ),
                               _buildSettingItem(
                                 "Change Password",
@@ -254,6 +279,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showDeleteAccountModal(BuildContext context) {
+    final TextEditingController passwordController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -291,6 +317,7 @@ class SettingsScreen extends StatelessWidget {
             SizedBox(height: 8.h),
             Obx(
               () => TextField(
+                controller: passwordController,
                 obscureText: isPasswordVisible.value,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -356,8 +383,12 @@ class SettingsScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle Logout
-                      Get.back();
+                      if (passwordController.text.isNotEmpty) {
+                        Get.back(); // Close modal
+                        _profileController.deleteAccount(passwordController.text);
+                      } else {
+                        Get.snackbar("Error", "Please enter your password", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.orange100,
@@ -367,7 +398,7 @@ class SettingsScreen extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
                     child: CustomText(
-                      text: "Log Out",
+                      text: "Confirm",
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,

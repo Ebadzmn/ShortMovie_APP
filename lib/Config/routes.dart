@@ -9,6 +9,7 @@ import 'package:uremz100/Features/Home/Views/Bottom_NabBar/Bottom_NabBar_Screens
 import 'package:uremz100/Features/Home/Views/My_List/my_list_screen.dart';
 import 'package:uremz100/Features/Home/Views/Profile/Change_password/change_password.dart';
 import 'package:uremz100/Features/Home/Views/Profile/Change_profile_info/change_profile_info.dart';
+import 'package:uremz100/Features/Home/Views/Profile/Change_email/change_email.dart';
 import 'package:uremz100/Features/Home/Views/Profile/Privacy_Policy/privacy_policy.dart';
 import 'package:uremz100/Features/Home/Views/Profile/Settings/settings_screen.dart';
 import 'package:uremz100/Features/Home/Views/Profile/User_agreement/user_agreement.dart';
@@ -33,6 +34,7 @@ class Routes {
   static const String discoverScreen = "/DiscoverScreen";
   static const String settingsScreen = "/SettingsScreen";
   static const String changeProfileInfo = "/change_profile_info";
+  static const String changeEmail = "/change_email";
   static const String changePassword = "/change_password";
   static const String privacyPolicy = "/privacy_policy";
   static const String userAgreement = "/user_agreement";
@@ -98,6 +100,11 @@ class Routes {
     GetPage(
       name: changeProfileInfo,
       page: () => ChangeProfileInfoScreen(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: changeEmail,
+      page: () => ChangeEmailScreen(),
       transition: Transition.noTransition,
     ),
     GetPage(

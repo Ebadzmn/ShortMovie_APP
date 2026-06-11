@@ -16,8 +16,22 @@ class ApiEndpoints {
   // My List endpoints
   static const String recentlyWatched = '/recently-watched';
   static const String myCollection = '/my-collection';
+  static const String bulkRemoveCollection = '/my-collection/bulk';
 
   // Shorts endpoints
   static const String shorts = '/shorts';
   static String trackShortView(String shortId) => '/shorts/$shortId/view';
+
+  // User & Profile endpoints
+  static const String userProfile = '/users/me';
+  static const String deleteAccount = '/users/me';
+  static const String requestEmailChange = '/users/me/email-change/request';
+  static const String confirmEmailChange = '/users/me/email-change/confirm';
+
+  // Auth endpoints
+  static const String restoreAccount = '/auth/restore-account';
+
+  // Legal endpoints
+  static const String legals = '/legals';
+  static String legalBySlug(String slug) => '/legals/$slug';
 }
