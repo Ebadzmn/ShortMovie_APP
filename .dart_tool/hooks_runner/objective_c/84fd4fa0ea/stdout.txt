@@ -1,58 +1,60 @@
-Running `(cd /Users/ebad/.pub-cache/hosted/pub.dev/objective_c-9.3.0/; ANDROID_HOME=/Users/ebad/Library/Android/sdk TMPDIR=/var/folders/mb/dl2sk3px3r7fppzjrjfnfry40000gq/T/ PATH=/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/PlugIns/SWBUniversalPlatformPlugin.bundle/Contents/Frameworks/SWBUniversalPlatform.framework/Resources:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/bin:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec:/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/usr/bin:/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/usr/local/bin:/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/local/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/local/bin:/Users/ebad/.antigravity-ide/antigravity-ide/bin:/Users/ebad/.antigravity/antigravity/bin:/Users/ebad/.codeium/windsurf/bin:/Users/ebad/.nvm/versions/node/v25.2.1/bin:/Users/ebad/development/flutter/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/Library/Apple/usr/bin:/opt/homebrew/bin:/Users/ebad/.pub-cache/bin:/Users/ebad/Library/Android/sdk/emulator:/Users/ebad/Library/Android/sdk/platform-tools:/Users/ebad/flutter/bin:/Users/ebad/flutter/bin/cache/dart-sdk/bin HOME=/Users/ebad /Users/ebad/development/flutter/bin/cache/dart-sdk/bin/dart --packages=/Users/ebad/uremz100/.dart_tool/package_config.json /Users/ebad/uremz100/.dart_tool/hooks_runner/objective_c/84fd4fa0ea/hook.dill --config=/Users/ebad/uremz100/.dart_tool/hooks_runner/objective_c/84fd4fa0ea/input.json )`.
-INFO: 2026-06-10 22:05:33.636875: Running `/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang --version`.
+Running `(cd /Users/macbook/.pub-cache/hosted/pub.dev/objective_c-9.3.0/; ANDROID_HOME=/Users/macbook/Library/Android/sdk TMPDIR=/var/folders/_w/5fhsp65n42z6p1c46r04hcrr0000gn/T/ ANDROID_NDK_ROOT=/Users/macbook/Library/Android/sdk/ndk/28.2.13676358 PATH=/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/PlugIns/SWBUniversalPlatformPlugin.bundle/Contents/Frameworks/SWBUniversalPlatform.framework/Resources:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/bin:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec:/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/usr/bin:/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/usr/local/bin:/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/local/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/local/bin:/Users/macbook/.mavis/bin:/Users/macbook/miniconda3/bin:/Users/macbook/miniconda3/condabin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/opt/homebrew/Caskroom/flutter/latest/flutter/bin:/Users/macbook/.lmstudio/bin HOME=/Users/macbook ANDROID_NDK_HOME=/Users/macbook/Library/Android/sdk/ndk/28.2.13676358 /Users/macbook/Development/flutter/bin/cache/dart-sdk/bin/dart --packages=/Users/macbook/ShortMovie_APP/.dart_tool/package_config.json /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/objective_c/84fd4fa0ea/hook.dill --config=/Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/objective_c/84fd4fa0ea/input.json )`.
+INFO: 2026-06-13 01:48:10.966133: Running `/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang --version`.
 
-INFO: 2026-06-10 22:05:33.647911: Running `/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang --version`.
+INFO: 2026-06-13 01:48:10.978951: Running `/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang --version`.
 
-INFO: 2026-06-10 22:05:33.659739: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -c /Users/ebad/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/include/dart_api_dl.c -fpic -I src -o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/include/dart_api_dl.c.o
+INFO: 2026-06-13 01:48:10.987495: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -c /Users/macbook/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/include/dart_api_dl.c -fpic -I src -o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/include/dart_api_dl.c.o
 
-INFO: 2026-06-10 22:05:33.659997: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -c /Users/ebad/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/objective_c.c -fpic -I src -o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.c.o
+INFO: 2026-06-13 01:48:10.987747: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -c /Users/macbook/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/objective_c.c -fpic -I src -o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.c.o
 
-INFO: 2026-06-10 22:05:33.660103: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/ebad/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/input_stream_adapter.m -fpic -I src -o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/input_stream_adapter.m.o
+INFO: 2026-06-13 01:48:10.987854: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/macbook/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/input_stream_adapter.m -fpic -I src -o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/input_stream_adapter.m.o
 
-INFO: 2026-06-10 22:05:33.660253: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/ebad/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/observer.m -fpic -I src -o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/observer.m.o
+INFO: 2026-06-13 01:48:10.988011: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/macbook/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/observer.m -fpic -I src -o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/observer.m.o
 
 .m.o
 
-INFO: 2026-06-10 22:05:33.660327: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/ebad/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/ns_number.m -fpic -I src -o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/ns_number.m.o
+INFO: 2026-06-13 01:48:10.988098: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/macbook/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/ns_number.m -fpic -I src -o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/ns_number.m.o
 
-INFO: 2026-06-10 22:05:33.660397: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/ebad/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/protocol.m -fpic -I src -o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/protocol.m.o
+INFO: 2026-06-13 01:48:10.988175: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/macbook/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/protocol.m -fpic -I src -o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/protocol.m.o
 
-INFO: 2026-06-10 22:05:33.660473: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/ebad/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/objective_c_bindings_generated.m -fpic -I src -o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c_bindings_generated.m.o
+INFO: 2026-06-13 01:48:10.988249: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios-simulator -mios-version-min=13 -x objective-c -fobjc-arc -c /Users/macbook/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/objective_c_bindings_generated.m -fpic -I src -o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c_bindings_generated.m.o
 
-INFO: 2026-06-10 22:05:33.774481: 
-INFO: 2026-06-10 22:05:33.774642: 
-INFO: 2026-06-10 22:05:33.774696: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/observer.m.o
-INFO: 2026-06-10 22:05:33.774984: 
-INFO: 2026-06-10 22:05:33.775023: 
-INFO: 2026-06-10 22:05:33.775044: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.c.o
-INFO: 2026-06-10 22:05:33.775130: 
-INFO: 2026-06-10 22:05:33.775149: 
-INFO: 2026-06-10 22:05:33.775170: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/include/dart_api_dl.c.o
+INFO: 2026-06-13 01:48:11.020099: 
+INFO: 2026-06-13 01:48:11.020171: 
+INFO: 2026-06-13 01:48:11.020192: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/include/dart_api_dl.c.o
 
-INFO: 2026-06-10 22:05:33.776911: 
-INFO: 2026-06-10 22:05:33.776946: 
-INFO: 2026-06-10 22:05:33.776955: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/protocol.m.o
+INFO: 2026-06-13 01:48:11.025872: 
+INFO: 2026-06-13 01:48:11.025928: 
+INFO: 2026-06-13 01:48:11.025951: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.c.o
 
-INFO: 2026-06-10 22:05:33.884909: 
-INFO: 2026-06-10 22:05:33.884944: 
-INFO: 2026-06-10 22:05:33.884955: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/ns_number.m.o
+INFO: 2026-06-13 01:48:11.038018: 
+INFO: 2026-06-13 01:48:11.038064: 
+INFO: 2026-06-13 01:48:11.038075: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/protocol.m.o
 
-INFO: 2026-06-10 22:05:33.894217: 
-INFO: 2026-06-10 22:05:33.894248: 
-INFO: 2026-06-10 22:05:33.894258: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.m.o
+INFO: 2026-06-13 01:48:11.040654: 
+INFO: 2026-06-13 01:48:11.040690: 
+INFO: 2026-06-13 01:48:11.040705: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/observer.m.o
 
-INFO: 2026-06-10 22:05:33.896454: 
-INFO: 2026-06-10 22:05:33.896482: 
-INFO: 2026-06-10 22:05:33.896507: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/input_stream_adapter.m.o
+INFO: 2026-06-13 01:48:11.102354: 
+INFO: 2026-06-13 01:48:11.102396: 
+INFO: 2026-06-13 01:48:11.102405: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.m.o
 
-INFO: 2026-06-10 22:05:33.904592: 
-INFO: 2026-06-10 22:05:33.904624: 
-INFO: 2026-06-10 22:05:33.904632: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c_bindings_generated.m.o
+INFO: 2026-06-13 01:48:11.104094: 
+INFO: 2026-06-13 01:48:11.104117: 
+INFO: 2026-06-13 01:48:11.104126: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/ns_number.m.o
 
-INFO: 2026-06-10 22:05:33.904869: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -shared -Wl,-encryptable -undefined dynamic_lookup -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios-simulator -mios-version-min=13 /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/include/dart_api_dl.c.o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.c.o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/input_stream_adapter.m.o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.m.o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/observer.m.o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/ns_number.m.o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/protocol.m.o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c_bindings_generated.m.o -o /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/objective_c.dylib
+INFO: 2026-06-13 01:48:11.104824: 
+INFO: 2026-06-13 01:48:11.104839: 
+INFO: 2026-06-13 01:48:11.104846: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/input_stream_adapter.m.o
 
-INFO: 2026-06-10 22:05:33.933913: 
-INFO: 2026-06-10 22:05:33.934014: ld: warning: -undefined dynamic_lookup is deprecated on iOS-simulator
+INFO: 2026-06-13 01:48:11.113882: 
+INFO: 2026-06-13 01:48:11.113896: 
+INFO: 2026-06-13 01:48:11.113903: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c_bindings_generated.m.o
 
-INFO: 2026-06-10 22:05:33.934030: Generated /Users/ebad/uremz100/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/objective_c.dylib
+INFO: 2026-06-13 01:48:11.114125: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -shared -Wl,-encryptable -undefined dynamic_lookup -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios-simulator -mios-version-min=13 /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/include/dart_api_dl.c.o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.c.o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/input_stream_adapter.m.o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c.m.o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/observer.m.o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/ns_number.m.o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/protocol.m.o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/obj/src/objective_c_bindings_generated.m.o -o /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/objective_c.dylib
+
+INFO: 2026-06-13 01:48:11.138739: 
+INFO: 2026-06-13 01:48:11.138783: ld: warning: -undefined dynamic_lookup is deprecated on iOS-simulator
+
+INFO: 2026-06-13 01:48:11.138792: Generated /Users/macbook/ShortMovie_APP/.dart_tool/hooks_runner/shared/objective_c/build/84fd4fa0ea/objective_c.dylib
 

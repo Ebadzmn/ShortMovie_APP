@@ -6,6 +6,7 @@ import 'package:uremz100/Shared/Widgets/LoginPopup.dart';
 import 'package:uremz100/Shared/Widgets/DailyBonusCoinPopup.dart';
 import 'package:uremz100/Shared/Widgets/MovieDetailsPopup.dart';
 import 'Controller/discover_controller.dart';
+import '../../Controllers/ranking_controller.dart';
 import 'Widget/discrive_widget.dart';
 import 'Popular/popular.dart';
 import 'New/new.dart';
@@ -18,6 +19,7 @@ class DiscoverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(DiscoverController());
+    final rankingController = Get.put(RankingController());
     return Scaffold(
       body: Stack(
         children: [
@@ -56,7 +58,7 @@ class DiscoverScreen extends StatelessWidget {
                               case 'VIP':
                                 return VipView(controller: controller);
                               case 'Ranking':
-                                return RankingView(controller: controller);
+                                return RankingView(controller: rankingController);
                               default:
                                 return PopularView(controller: controller);
                             }

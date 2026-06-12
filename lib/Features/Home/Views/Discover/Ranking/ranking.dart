@@ -5,10 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uremz100/Config/routes.dart';
 import 'package:uremz100/Utils/app_icons.dart';
-import '../Controller/discover_controller.dart';
+import 'package:uremz100/Features/Home/Controllers/ranking_controller.dart';
 
 class RankingView extends StatelessWidget {
-  final DiscoverController controller;
+  final RankingController controller;
   const RankingView({super.key, required this.controller});
 
   @override
@@ -35,16 +35,50 @@ class RankingView extends StatelessWidget {
           ),
         ),
         SizedBox(height: 20.h),
-        Obx(
-          () => ListView.builder(
+        Obx(() {
+          if (controller.isLoading.value) {
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 40.h),
+                child: const CircularProgressIndicator(color: Color(0xFFF76212)),
+              ),
+            );
+          }
+          if (controller.hasError.value && controller.rankingItems.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 40.h),
+                child: Column(
+                  children: [
+                    Text(controller.errorMessage.value, style: TextStyle(color: Colors.white, fontSize: 14.sp)),
+                    SizedBox(height: 10.h),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF76212)),
+                      onPressed: controller.retry,
+                      child: const Text('Retry', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          if (controller.rankingItems.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 40.h),
+                child: Text('No rankings available', style: TextStyle(color: Colors.white, fontSize: 14.sp)),
+              ),
+            );
+          }
+          return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: controller.rankingMovies.length,
+            itemCount: controller.rankingItems.length,
             itemBuilder: (context, index) {
               return _buildRankingItem(index);
             },
-          ),
-        ),
+          );
+        }),
       ],
     );
   }
@@ -79,7 +113,7 @@ class RankingView extends StatelessWidget {
   }
 
   Widget _buildRankingItem(int index) {
-    final movie = controller.rankingMovies[index];
+    final movie = controller.rankingItems[index];
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.shortsFullSeriesOverlay),
       child: Padding(
@@ -91,11 +125,17 @@ class RankingView extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8.r),
-                  child: Image.asset(
-                    movie.image,
+                  child: Image.network(
+                    movie.poster,
                     width: 80.w,
                     height: 100.h,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 80.w,
+                      height: 100.h,
+                      color: const Color(0xFF262626),
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                    ),
                   ),
                 ),
                 Positioned(
@@ -148,14 +188,14 @@ class RankingView extends StatelessWidget {
                       SizedBox(width: 8.w),
                       Row(
                         children: [
-                          SvgPicture.asset(
-                            AppIcons.fire_icon,
-                            width: 14.w,
-                            height: 14.w,
+                          Icon(
+                            Icons.star,
+                            color: const Color(0xFFF76212),
+                            size: 14.w,
                           ),
                           SizedBox(width: 4.w),
                           Text(
-                            movie.views,
+                            movie.rating?.toString() ?? '0',
                             style: GoogleFonts.inter(
                               color: const Color(0xFFF76212),
                               fontSize: 12.sp,
@@ -170,7 +210,7 @@ class RankingView extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(right: 60.w),
                     child: Text(
-                      movie.description,
+                      movie.type,
                       style: GoogleFonts.inter(
                         color: const Color(0xFFD9D9D9),
                         fontSize: 11.sp,
