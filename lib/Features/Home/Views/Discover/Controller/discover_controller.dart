@@ -7,9 +7,13 @@ import '../Data/discover_data.dart';
 import 'package:uremz100/Data/Repositories/home_repository.dart';
 import 'package:uremz100/Data/Models/home_content_model.dart';
 import 'package:uremz100/core/services/storage_service.dart';
+import 'package:uremz100/Data/Repositories/content_details_repository.dart';
+import 'package:uremz100/Data/Models/content_details_model.dart';
+import 'package:uremz100/Config/routes.dart';
 
 class DiscoverController extends GetxController {
   final HomeRepository _homeRepository = Get.find<HomeRepository>();
+  final ContentDetailsRepository _detailsRepository = Get.find<ContentDetailsRepository>();
 
   var selectedCategory = 'Popular'.obs;
   var showBonusPopup = false.obs;
@@ -294,6 +298,92 @@ class DiscoverController extends GetxController {
 
   void closePopup() {
     showBonusPopup.value = false;
+  }
+
+  var isPlayingDirectly = false.obs;
+
+  Future<void> playContentDirectly(String contentId) async {
+    if (isPlayingDirectly.value) return;
+    isPlayingDirectly.value = true;
+
+    // Show a loading dialog
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(
+          color: Color(0xFFF76212),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+
+    try {
+      final results = await Future.wait([
+        _detailsRepository.getContentDetails(contentId),
+        _detailsRepository.getPlaybackUrl(contentId),
+        _detailsRepository.getWatchProgress(contentId),
+      ]);
+
+      final detailsRes = results[0];
+      final playbackRes = results[1];
+      final progressRes = results[2];
+
+      // Close the loading dialog
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      if (playbackRes.isSuccess && playbackRes.data != null) {
+        final playbackUrl = (playbackRes.data as PlaybackUrlModel).url;
+        final details = detailsRes.isSuccess ? detailsRes.data as ContentDetailsModel : null;
+
+        int startSeconds = 0;
+        if (progressRes.isSuccess && progressRes.data != null) {
+          final progressData = progressRes.data as Map<String, dynamic>;
+          final watched = progressData['watchedSeconds'] is int 
+              ? progressData['watchedSeconds'] as int 
+              : (int.tryParse(progressData['watchedSeconds']?.toString() ?? '') ?? 0);
+          final total = progressData['totalDuration'] is int 
+              ? progressData['totalDuration'] as int 
+              : (int.tryParse(progressData['totalDuration']?.toString() ?? '') ?? 0);
+          if (total == 0 || watched < total) {
+            startSeconds = watched;
+          }
+        }
+
+        Get.toNamed(
+          Routes.shortsFullSeriesOverlay,
+          arguments: {
+            'contentId': contentId,
+            'playbackUrl': playbackUrl,
+            'title': details?.title ?? 'Movie Playback',
+            'description': details?.description ?? '',
+            'posterUrl': details?.posterUrl ?? '',
+            'startSeconds': startSeconds,
+          },
+        );
+      } else {
+        Get.snackbar(
+          "Playback Error",
+          playbackRes.message,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+      Get.snackbar(
+        "Error",
+        "Failed to load content: $e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } finally {
+      isPlayingDirectly.value = false;
+    }
   }
 
   @override

@@ -1,283 +1,329 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:get/get.dart';
-// import '../../../../Widgets/Custom_Text.dart';
-// import '../Models/discrive_models.dart';
-// import '../../Bottom_NabBar/Controller/Bottom_NabBar_Controller.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import '../../../../Utils/app_icons.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
+import 'package:uremz100/Features/Home/Views/Discover/Controller/movie_details_controller.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uremz100/Utils/app_icons.dart';
 
-// class MovieDetailScreen extends StatelessWidget {
-//   final DiscoverMovie movie;
-//   const MovieDetailScreen({super.key, required this.movie});
+class MovieDetailScreen extends StatelessWidget {
+  const MovieDetailScreen({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     // Initialize NavigationController to handle bottom nav if needed
-//     // However, usually detail screens might not have bottom nav or might have a specific one.
-//     // Looking at the image, it has a bottom nav bar.
-//     final navController = Get.find<NavigationController>();
+  @override
+  Widget build(BuildContext context) {
+    final String contentId = Get.arguments as String;
+    // Instantiate or find the controller specifically for this contentId
+    final controller = Get.put(MovieDetailsController(contentId: contentId), tag: contentId);
 
-//     return Scaffold(
-//       body: Stack(
-//         children: [
-//           // Background Image with Gradient
-//           Positioned(
-//             top: 0,
-//             left: 0,
-//             right: 0,
-//             height: 500.h,
-//             child: Stack(
-//               children: [
-//                 Image.asset(
-//                   movie.image,
-//                   width: double.infinity,
-//                   height: double.infinity,
-//                   fit: BoxFit.cover,
-//                 ),
-//                 Container(
-//                   decoration: BoxDecoration(
-//                     gradient: LinearGradient(
-//                       begin: Alignment.topCenter,
-//                       end: Alignment.bottomCenter,
-//                       colors: [
-//                         Colors.black.withOpacity(0.4),
-//                         Colors.transparent,
-//                         Colors.black.withOpacity(0.8),
-//                         Colors.black,
-//                       ],
-//                       stops: const [0.0, 0.3, 0.8, 1.0],
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
+    return Scaffold(
+      backgroundColor: const Color(0xFF0C0C0C),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Color(0xFFF76212),
+            ),
+          );
+        }
 
-//           // Scrollable Content
-//           SingleChildScrollView(
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 SizedBox(height: 300.h), // Offset to show background
-//                 // Main Info Card
-//                 Container(
-//                   padding: EdgeInsets.all(16.r),
-//                   decoration: BoxDecoration(
-//                     color: const Color(0xFF0C0C0C),
-//                     borderRadius: BorderRadius.only(
-//                       topLeft: Radius.circular(24.r),
-//                       topRight: Radius.circular(24.r),
-//                     ),
-//                   ),
-//                   child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       // Movie Header (Title & Image)
-//                       Row(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           ClipRRect(
-//                             borderRadius: BorderRadius.circular(8.r),
-//                             child: Image.asset(
-//                               movie.image,
-//                               width: 80.w,
-//                               height: 100.h,
-//                               fit: BoxFit.cover,
-//                             ),
-//                           ),
-//                           SizedBox(width: 12.w),
-//                           Expanded(
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 CustomText(
-//                                   text: movie.title,
-//                                   fontSize: 18.sp,
-//                                   fontWeight: FontWeight.w700,
-//                                   color: Colors.white,
-//                                 ),
-//                                 SizedBox(height: 8.h),
-//                                 CustomText(
-//                                   text: movie.description,
-//                                   fontSize: 11.sp,
-//                                   fontWeight: FontWeight.w400,
-//                                   color: const Color(0xFFC9C9C9),
-//                                   maxLines: 3,
-//                                   overflow: TextOverflow.ellipsis,
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ],
-//                       ),
+        if (controller.hasError.value) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, color: Colors.redAccent, size: 48.sp),
+                SizedBox(height: 16.h),
+                CustomText(
+                  text: controller.errorMessage.value,
+                  fontSize: 14.sp,
+                  color: Colors.white,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16.h),
+                ElevatedButton(
+                  onPressed: controller.fetchDetails,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF76212),
+                  ),
+                  child: const Text("Retry", style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          );
+        }
 
-//                       SizedBox(height: 24.h),
+        final details = controller.movieDetails.value;
+        if (details == null) {
+          return const Center(
+            child: CustomText(
+              text: "No details found.",
+              color: Colors.white,
+            ),
+          );
+        }
 
-//                       // Episode Range Tabs
-//                       Row(
-//                         children: [
-//                           _buildRangeTab("1-25", true),
-//                           SizedBox(width: 30.w),
-//                           _buildRangeTab("26-43", false),
-//                         ],
-//                       ),
+        return Stack(
+          children: [
+            // Background Poster Image with Top-to-Bottom Gradient
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 480.h,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  details.posterUrl.isNotEmpty
+                      ? (details.posterUrl.startsWith('http')
+                          ? Image.network(
+                              details.posterUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                color: Colors.grey[900],
+                                child: const Icon(Icons.broken_image, color: Colors.white54, size: 50),
+                              ),
+                            )
+                          : Image.asset(
+                              details.posterUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                color: Colors.grey[900],
+                                child: const Icon(Icons.broken_image, color: Colors.white54, size: 50),
+                              ),
+                            ))
+                      : Container(color: Colors.grey[900]),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.4),
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.8),
+                          const Color(0xFF0C0C0C),
+                        ],
+                        stops: const [0.0, 0.4, 0.8, 1.0],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-//                       SizedBox(height: 20.h),
+            // Scrollable Content details
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 320.h),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0C0C0C),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(24.r),
+                        topRight: Radius.circular(24.r),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Movie Title & Basic Details (Release Year, Duration)
+                        CustomText(
+                          text: details.title,
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 8.h),
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF76212).withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(4.r),
+                                border: Border.all(color: const Color(0xFFF76212), width: 0.5),
+                              ),
+                              child: CustomText(
+                                text: details.type,
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFF76212),
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            CustomText(
+                              text: "${details.releaseYear}",
+                              fontSize: 12.sp,
+                              color: Colors.grey[400],
+                            ),
+                            SizedBox(width: 8.w),
+                            Icon(Icons.fiber_manual_record, size: 6.w, color: Colors.grey),
+                            SizedBox(width: 8.w),
+                            CustomText(
+                              text: "${details.duration} min",
+                              fontSize: 12.sp,
+                              color: Colors.grey[400],
+                            ),
+                            if (details.planStatus.isNotEmpty) ...[
+                              SizedBox(width: 8.w),
+                              Icon(Icons.fiber_manual_record, size: 6.w, color: Colors.grey),
+                              SizedBox(width: 8.w),
+                              CustomText(
+                                text: details.planStatus.join(", "),
+                                fontSize: 12.sp,
+                                color: const Color(0xFFF76212),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ]
+                          ],
+                        ),
+                        SizedBox(height: 16.h),
 
-//                       // Episode Grid
-//                       GridView.builder(
-//                         shrinkWrap: true,
-//                         physics: const NeverScrollableScrollPhysics(),
-//                         padding: EdgeInsets.zero,
-//                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//                           crossAxisCount: 5,
-//                           mainAxisSpacing: 10.h,
-//                           crossAxisSpacing: 10.w,
-//                           childAspectRatio: 1,
-//                         ),
-//                         itemCount: 25,
-//                         itemBuilder: (context, index) {
-//                           int episodeNum = index + 1;
-//                           bool hasBadge = episodeNum >= 11;
-//                           return _buildEpisodeButton(episodeNum, hasBadge);
-//                         },
-//                       ),
-//                       SizedBox(height: 20.h),
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
+                        // Play Button
+                        Obx(() {
+                          final isPlayLoading = controller.isLoadingPlayback.value;
+                          return GestureDetector(
+                            onTap: isPlayLoading ? null : () => controller.playMovie(),
+                            child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(vertical: 14.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF76212),
+                                borderRadius: BorderRadius.circular(12.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFF76212).withOpacity(0.3),
+                                    blurRadius: 10.r,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              alignment: Alignment.center,
+                              child: isPlayLoading
+                                  ? SizedBox(
+                                      height: 20.w,
+                                      width: 20.w,
+                                      child: const CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.play_arrow, color: Colors.white, size: 20.sp),
+                                        SizedBox(width: 6.w),
+                                        CustomText(
+                                          text: "Play Movie",
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                          );
+                        }),
+                        SizedBox(height: 20.h),
 
-//           // Back Button (Fixed)
-//           SafeArea(
-//             child: Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 16.w),
-//               child: GestureDetector(
-//                 onTap: () => Get.back(),
-//                 child: Icon(
-//                   Icons.arrow_back_ios_new,
-//                   color: Colors.white,
-//                   size: 20.sp,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//       bottomNavigationBar: _buildBottomNav(navController),
-//     );
-//   }
+                        // Description
+                        CustomText(
+                          text: "Storyline",
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 8.h),
+                        CustomText(
+                          text: details.description.isNotEmpty
+                              ? details.description
+                              : "No description available for this content.",
+                          fontSize: 13.sp,
+                          color: Colors.grey[400],
+                        ),
+                        SizedBox(height: 24.h),
 
-//   Widget _buildRangeTab(String label, bool isSelected) {
-//     return IntrinsicWidth(
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           CustomText(
-//             text: label,
-//             fontSize: 24.sp, // Made larger as per the image
-//             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-//             color: isSelected
-//                 ? const Color(0xFFF76212)
-//                 : const Color(0xFF8E8E8E),
-//           ),
-//           Container(
-//             margin: EdgeInsets.only(top: 4.h),
-//             height: 2.h,
-//             width: double.infinity,
-//             color: isSelected ? const Color(0xFFF76212) : Colors.transparent,
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+                        // Metadata Genres / Cast
+                        if (details.genres.isNotEmpty) ...[
+                          CustomText(
+                            text: "Genres",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          SizedBox(height: 8.h),
+                          Wrap(
+                            spacing: 8.w,
+                            runSpacing: 8.h,
+                            children: details.genres.map((genre) => _buildGenreTag(genre)).toList(),
+                          ),
+                          SizedBox(height: 20.h),
+                        ],
 
-//   Widget _buildEpisodeButton(int number, bool hasBadge) {
-//     return Stack(
-//       children: [
-//         Container(
-//           decoration: BoxDecoration(
-//             color: Color(0xFF2A2A2A), // Dark grey from image
-//             borderRadius: BorderRadius.circular(4.r),
-//           ),
-//           child: Center(
-//             child: CustomText(
-//               text: "$number",
-//               fontSize: 14.sp,
-//               fontWeight: FontWeight.w500,
-//               color: Colors.white,
-//             ),
-//           ),
-//         ),
-//         if (hasBadge)
-//           Positioned(
-//             top: 0,
-//             right: 0,
-//             child: Container(
-//               padding: EdgeInsets.all(4.r),
-//               decoration: BoxDecoration(
-//                 color: Color(0xFFF76212),
-//                 borderRadius: BorderRadius.only(
-//                   topRight: Radius.circular(8.r),
-//                   bottomLeft: Radius.circular(8.r),
-//                 ),
-//               ),
-//               child: Icon(Icons.lock_outline, color: Colors.white, size: 13.sp),
-//             ),
-//           ),
-//       ],
-//     );
-//   }
+                        if (details.cast.isNotEmpty) ...[
+                          CustomText(
+                            text: "Cast",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          SizedBox(height: 8.h),
+                          CustomText(
+                            text: details.cast.join(", "),
+                            fontSize: 13.sp,
+                            color: Colors.grey[400],
+                          ),
+                        ],
+                        SizedBox(height: 80.h),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-//   Widget _buildBottomNav(NavigationController navController) {
-//     return Container(
-//       height: 80.h,
-//       decoration: const BoxDecoration(
-//         color: Colors.black,
-//         border: Border(top: BorderSide(color: Colors.white, width: 0.5)),
-//       ),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceAround,
-//         children: [
-//           _buildNavItem(0, "Discover", AppIcons.discover_icon, navController),
-//           _buildNavItem(1, "Shorts", AppIcons.shorts_icon, navController),
-//           _buildNavItem(2, "My List", AppIcons.my_list_icon, navController),
-//           _buildNavItem(3, "Rewards", AppIcons.rewards_icon, navController),
-//           _buildNavItem(4, "Profile", AppIcons.profile_icon, navController),
-//         ],
-//       ),
-//     );
-//   }
+            // Back Floating Button
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 10.h,
+              left: 16.w,
+              child: GestureDetector(
+                onTap: () => Get.back(),
+                child: Container(
+                  padding: EdgeInsets.all(8.r),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.white,
+                    size: 20.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
 
-//   Widget _buildNavItem(
-//     int index,
-//     String label,
-//     String iconPath,
-//     NavigationController controller,
-//   ) {
-//     final bool isSelected = controller.currentIndex.value == index;
-//     return GestureDetector(
-//       onTap: () {
-//         controller.changeIndex(index);
-//         Get.back(); // Navigate back to main screen which holds the PageView
-//       },
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           SvgPicture.asset(iconPath, width: 24.w, height: 24.w),
-//           SizedBox(height: 4.h),
-//           Text(
-//             label,
-//             style: TextStyle(
-//               fontSize: 10.sp,
-//               color: isSelected ? Colors.white : const Color(0xFF8E8E8E),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+  Widget _buildGenreTag(String genre) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(6.r),
+      ),
+      child: CustomText(
+        text: genre,
+        fontSize: 12.sp,
+        color: Colors.grey[300],
+      ),
+    );
+  }
+}

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:uremz100/Config/routes.dart';
 import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
+import 'package:uremz100/Features/Home/Views/Discover/Controller/discover_controller.dart';
 import '../Models/discrive_models.dart';
 
 class MovieCard extends StatelessWidget {
@@ -13,7 +14,7 @@ class MovieCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.toNamed(Routes.shortsFullSeriesOverlay);
+        Get.find<DiscoverController>().playContentDirectly(movie.id);
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -73,7 +73,11 @@ class ShortsController extends GetxController {
     _trackShortViewUseCase = TrackShortViewUseCase(repository);
     _addToCollectionUseCase = AddToCollectionUseCase(repository);
 
-    fetchShorts();
+    if (Get.arguments != null && Get.arguments is Map && (Get.arguments as Map).containsKey('playbackUrl')) {
+      handleArguments(Get.arguments);
+    } else {
+      fetchShorts();
+    }
 
     // Listen to index changes to trigger view tracking
     ever(currentIndex, (int index) {
@@ -86,6 +90,34 @@ class ShortsController extends GetxController {
         }
       }
     });
+  }
+
+  void handleArguments(dynamic arguments) {
+    if (arguments != null && arguments is Map && arguments.containsKey('playbackUrl')) {
+      final args = arguments;
+      final playbackUrl = args['playbackUrl'] as String;
+      final title = args['title'] as String? ?? 'Movie Playback';
+      final description = args['description'] as String? ?? '';
+      final posterUrl = args['posterUrl'] as String? ?? '';
+      final contentId = args['contentId'] as String? ?? '';
+
+      final singleMovie = ShortsModel(
+        id: contentId,
+        videoUrl: playbackUrl,
+        posterUrl: posterUrl,
+        title: title,
+        description: description,
+        episode: '1',
+        season: '1',
+      );
+      
+      pauseCurrentVideo();
+      shortsList.assignAll([singleMovie]);
+      currentIndex.value = 0;
+      isInitialLoading(false);
+      
+      _startViewTracking(contentId);
+    }
   }
 
   @override
@@ -291,8 +323,15 @@ class ShortsController extends GetxController {
   void triggerPip() {
     if (shortsList.isNotEmpty) {
       final activeShort = shortsList[currentIndex.value];
+      Duration? currentPos;
       try {
-        PipController.to.showPip(activeShort);
+        if (Get.isRegistered<ShortsVideoController>(tag: activeShort.id)) {
+          final videoController = Get.find<ShortsVideoController>(tag: activeShort.id);
+          currentPos = videoController.position.value;
+        }
+      } catch (e) {}
+      try {
+        PipController.to.showPip(activeShort, startPosition: currentPos);
       } catch (e) {}
     }
   }

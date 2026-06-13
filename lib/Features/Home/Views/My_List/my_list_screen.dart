@@ -11,6 +11,7 @@ import 'Controller/my_list_controller.dart';
 import 'package:uremz100/Data/Models/recently_watched_model.dart';
 import 'package:uremz100/Data/Models/my_collection_model.dart';
 import 'package:uremz100/Features/Home/Views/Bottom_NabBar/Controller/Bottom_NabBar_Controller.dart';
+import 'package:uremz100/Features/Home/Views/Discover/Controller/discover_controller.dart';
 
 class MyListScreen extends GetView<MyListController> {
   const MyListScreen({super.key});
@@ -219,6 +220,13 @@ class MyListScreen extends GetView<MyListController> {
       onTap: () {
         if (controller.isSelectionMode.value) {
           controller.toggleItemSelected(item.contentId.id);
+        } else {
+          if (Get.isRegistered<DiscoverController>()) {
+            Get.find<DiscoverController>().playContentDirectly(item.contentId.id);
+          } else {
+            final discoverController = Get.put(DiscoverController());
+            discoverController.playContentDirectly(item.contentId.id);
+          }
         }
       },
       child: Column(
@@ -335,6 +343,13 @@ class MyListScreen extends GetView<MyListController> {
       onTap: () {
         if (controller.isSelectionMode.value) {
           controller.toggleItemSelected(item.itemId.id);
+        } else {
+          if (Get.isRegistered<DiscoverController>()) {
+            Get.find<DiscoverController>().playContentDirectly(item.itemId.id);
+          } else {
+            final discoverController = Get.put(DiscoverController());
+            discoverController.playContentDirectly(item.itemId.id);
+          }
         }
       },
       child: Column(

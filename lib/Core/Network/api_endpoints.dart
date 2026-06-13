@@ -1,6 +1,6 @@
 class ApiEndpoints {
   // Base URL
-  static const String baseUrl = 'https://nayem5001.binarybards.online/api/v1';
+  static const String baseUrl = 'https://nayem5002.binarybards.online/api/v1';
 
   // Auth endpoints
   static const String register = '/users/';
@@ -15,6 +15,7 @@ class ApiEndpoints {
 
   // My List endpoints
   static const String recentlyWatched = '/recently-watched';
+  static const String trackProgress = '/recently-watched/track-progress';
   static const String myCollection = '/my-collection';
   static const String bulkRemoveCollection = '/my-collection/bulk';
 
@@ -34,4 +35,9 @@ class ApiEndpoints {
   // Legal endpoints
   static const String legals = '/legals';
   static String legalBySlug(String slug) => '/legals/$slug';
+
+  // Content Details & Playback endpoints
+  static String contentDetails(String contentId) => '/contents/$contentId/details';
+  static String playbackUrl(String contentId) => '/contents/$contentId/playback-url';
+  static String watchProgress(String contentId) => '/recently-watched/content/$contentId';
 }

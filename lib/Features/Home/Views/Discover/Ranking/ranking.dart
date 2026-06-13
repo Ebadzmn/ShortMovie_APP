@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uremz100/Config/routes.dart';
 import 'package:uremz100/Utils/app_icons.dart';
 import 'package:uremz100/Features/Home/Controllers/ranking_controller.dart';
+import 'package:uremz100/Features/Home/Views/Discover/Controller/discover_controller.dart';
 
 class RankingView extends StatelessWidget {
   final RankingController controller;
@@ -115,7 +116,7 @@ class RankingView extends StatelessWidget {
   Widget _buildRankingItem(int index) {
     final movie = controller.rankingItems[index];
     return GestureDetector(
-      onTap: () => Get.toNamed(Routes.shortsFullSeriesOverlay),
+      onTap: () => Get.find<DiscoverController>().playContentDirectly(movie.id),
       child: Padding(
         padding: EdgeInsets.only(bottom: 20.h),
         child: Row(

@@ -19,6 +19,10 @@ class ShortsFullSeriesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(ShortsController());
 
+    if (Get.arguments != null && Get.arguments is Map && (Get.arguments as Map).containsKey('playbackUrl')) {
+      controller.handleArguments(Get.arguments);
+    }
+
     // Force Full Series Mode on entry
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.isFullSeriesMode.value = true;
@@ -47,51 +51,42 @@ class ShortsFullSeriesScreen extends StatelessWidget {
       child: Scaffold(
         body: Stack(
           children: [
-            PageView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: controller.shortsList.length,
-              onPageChanged: (index) => controller.currentIndex.value = index,
-              itemBuilder: (context, index) {
-                final shorts = controller.shortsList[index];
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    // Background Video
-                    ShortsVideoPlayer(
-                      videoUrl: shorts.videoUrl, 
-                      posterUrl: shorts.posterUrl,
-                      id: shorts.id,
-                      index: index,
-                    ),
-            
-                    // Force Full Series Overlay
-                    ShortsFullSeriesOverlay(
-                      controller: controller,
-                      shorts: shorts,
-                      onBack: () => controller.exitFullSeries(),
-                    ),
-                    // // More Button
-                    // Positioned(
-                    //   left: 16.w,
-                    //   bottom: 85.h,
-                    //   child: GestureDetector(
-                    //     onTap: () async {
-                    //       controller.pauseCurrentVideo();
-                    //       await Get.toNamed(Routes.moreScreen);
-                    //       controller.playCurrentVideo();
-                    //     },
-                    //     child: CustomText(
-                    //       text: "More",
-                    //       fontSize: 12.sp,
-                    //       fontWeight: FontWeight.w600,
-                    //       color: const Color(0xFFE6B323),
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
+            Obx(() {
+              if (controller.shortsList.isEmpty) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFFF76212),
+                  ),
                 );
-              },
-            ),
+              }
+              return PageView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: controller.shortsList.length,
+                onPageChanged: (index) => controller.currentIndex.value = index,
+                itemBuilder: (context, index) {
+                  final shorts = controller.shortsList[index];
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      // Background Video
+                      ShortsVideoPlayer(
+                        videoUrl: shorts.videoUrl, 
+                        posterUrl: shorts.posterUrl,
+                        id: shorts.id,
+                        index: index,
+                      ),
+              
+                      // Force Full Series Overlay
+                      ShortsFullSeriesOverlay(
+                        controller: controller,
+                        shorts: shorts,
+                        onBack: () => controller.exitFullSeries(),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }),
 
             // Episode Selection Popup
             Obx(

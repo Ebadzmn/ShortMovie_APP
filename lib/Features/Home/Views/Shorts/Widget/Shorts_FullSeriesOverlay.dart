@@ -90,7 +90,7 @@ class ShortsFullSeriesOverlay extends StatelessWidget {
         ),
 
         // Central Play Button
-        ShortsOverlayComponents.buildCentralPlayButton(shorts.videoUrl),
+        ShortsOverlayComponents.buildCentralPlayButton(shorts.id),
 
         // Right Side Buttons
         Positioned(
@@ -159,7 +159,7 @@ class ShortsFullSeriesOverlay extends StatelessWidget {
           bottom: 55.h,
           left: 10.w,
           right: 10.w,
-          child: ShortsOverlayComponents.buildVideoSlider(shorts.videoUrl),
+          child: ShortsOverlayComponents.buildVideoSlider(shorts.id),
         ),
 
         // Reward Icon with Close Button (Top Right)

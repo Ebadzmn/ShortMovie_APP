@@ -19,6 +19,9 @@ class ShortsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ShortsController());
+    if (Get.arguments != null && Get.arguments is Map && (Get.arguments as Map).containsKey('playbackUrl')) {
+      controller.handleArguments(Get.arguments);
+    }
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {

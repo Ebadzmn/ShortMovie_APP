@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
 import 'package:uremz100/Utils/app_icons.dart';
+import 'package:uremz100/Config/routes.dart';
+import 'package:uremz100/Features/Home/Views/Discover/Controller/discover_controller.dart';
 import '../Models/discrive_models.dart';
 
 class TopPicksList extends StatelessWidget {
@@ -47,7 +50,7 @@ class TopPicksList extends StatelessWidget {
             return Padding(
               padding: EdgeInsets.only(bottom: 10.h),
               child: GestureDetector(
-                onTap: () {},
+                onTap: () => Get.find<DiscoverController>().playContentDirectly(movie.id),
                 child: Row(
                   children: [
                     Stack(

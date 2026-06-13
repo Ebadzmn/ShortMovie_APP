@@ -51,11 +51,30 @@ class _DraggablePipOverlayState extends State<_DraggablePipOverlay> {
           });
         },
         onTap: () {
-          // Re-open Full Series Overlay when tapped
-          controller.closePip();
-          Get.toNamed(
-            Routes.shortsFullSeriesOverlay,
-          ); // Maintain user's original navigation pattern
+          final activeShort = controller.currentShort.value;
+          if (activeShort != null) {
+            int startSeconds = 0;
+            if (controller.videoController != null) {
+              startSeconds = controller.videoController!.value.position.inSeconds;
+            }
+            
+            controller.closePip();
+            
+            Get.toNamed(
+              Routes.shortsFullSeriesOverlay,
+              arguments: {
+                'contentId': activeShort.id,
+                'playbackUrl': activeShort.videoUrl,
+                'title': activeShort.title,
+                'description': activeShort.description,
+                'posterUrl': activeShort.posterUrl,
+                'startSeconds': startSeconds,
+              },
+            );
+          } else {
+            controller.closePip();
+            Get.toNamed(Routes.shortsFullSeriesOverlay);
+          }
         },
         child: Container(
           width: 120.w,

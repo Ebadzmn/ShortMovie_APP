@@ -12,25 +12,37 @@ class PipController extends GetxController {
   final RxBool isPlaying = false.obs;
   final RxBool isVideoInitialized = false.obs;
 
-  void showPip(ShortsModel short) {
+  void showPip(ShortsModel short, {Duration? startPosition}) {
     currentShort.value = short;
     isPipVisible.value = true;
 
     // Initialize Video Player for the mini popup
-    _initController(short.videoUrl);
+    _initController(short.videoUrl, startPosition: startPosition);
   }
 
-  Future<void> _initController(String url) async {
+  Future<void> _initController(String url, {Duration? startPosition}) async {
     await videoController?.dispose();
     isVideoInitialized.value = false;
     isPlaying.value = false;
-    videoController = VideoPlayerController.networkUrl(Uri.parse(url))
-      ..initialize().then((_) {
-        videoController!.setLooping(true);
-        videoController!.play();
+    
+    final finalUrl = url.replaceFirst('http://', 'https://');
+    final controller = VideoPlayerController.networkUrl(Uri.parse(finalUrl));
+    videoController = controller;
+
+    try {
+      await controller.initialize();
+      if (videoController == controller) {
+        controller.setLooping(true);
+        if (startPosition != null) {
+          await controller.seekTo(startPosition);
+        }
+        await controller.play();
         isPlaying.value = true;
-        isVideoInitialized.value = true; // Triggers Obx to show video
-      });
+        isVideoInitialized.value = true;
+      }
+    } catch (e) {
+      print("Error initializing PIP video: $e");
+    }
   }
 
   void togglePlay() {

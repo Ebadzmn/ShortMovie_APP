@@ -33,7 +33,7 @@ class ShortsDefaultOverlay extends StatelessWidget {
         ),
 
         // Central Play Button
-        ShortsOverlayComponents.buildCentralPlayButton(shorts.videoUrl),
+        ShortsOverlayComponents.buildCentralPlayButton(shorts.id),
 
         // Right Side Buttons
         Positioned(
@@ -121,7 +121,7 @@ class ShortsDefaultOverlay extends StatelessWidget {
           bottom: 4.h,
           left: 10.w,
           right: 10.w,
-          child: ShortsOverlayComponents.buildVideoSlider(shorts.videoUrl),
+          child: ShortsOverlayComponents.buildVideoSlider(shorts.id),
         ),
       ],
     );

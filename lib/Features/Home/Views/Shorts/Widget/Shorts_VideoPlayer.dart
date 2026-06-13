@@ -37,18 +37,35 @@ class _ShortsVideoPlayerState extends State<ShortsVideoPlayer>
   void initState() {
     super.initState();
 
+    int startSeconds = 0;
+    if (Get.arguments != null && Get.arguments is Map) {
+      final args = Get.arguments as Map;
+      if (args['contentId'] == widget.id) {
+        startSeconds = args['startSeconds'] as int? ?? 0;
+      }
+    }
+
     // Get or create the video controller for this URL
     controller = Get.put(
-      ShortsVideoController(widget.videoUrl),
+      ShortsVideoController(widget.videoUrl, contentId: widget.id, startSeconds: startSeconds),
       tag: widget.id,
     );
 
-    // Listen to page swipes: dispose when item leaves viewport, do not auto-play
+    // Listen to page swipes: auto-play active video, dispose inactive
     try {
       final shortsController = Get.find<ShortsController>();
+      if (shortsController.currentIndex.value == widget.index) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (!controller.isClosed) {
+            controller.initializeAndPlay();
+          }
+        });
+      }
       _pageWorker = ever(shortsController.currentIndex, (idx) {
         if (controller.isClosed) return;
-        if (idx != widget.index) {
+        if (idx == widget.index) {
+          controller.initializeAndPlay();
+        } else {
           // Dispose controller when item leaves viewport
           controller.disposeVideo();
         }

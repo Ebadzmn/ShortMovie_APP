@@ -21,9 +21,11 @@ import 'package:uremz100/Features/Home/Views/Shorts/shorts_screen.dart';
 import 'package:uremz100/Features/Home/Views/Standard_VIP/standard_vip.dart';
 import '../Features/Auth/Welcome_Screen/welcome_Screen.dart';
 import '../Features/Home/Views/Discover/discover_screen.dart';
+import 'package:uremz100/Features/Home/Views/Discover/Detail/discover_detail_screen.dart';
 
 class Routes {
   static const String welcomeScreen = "/WelcomeScreen";
+  static const String movieDetailScreen = "/MovieDetailScreen";
   static const String signinAndSignupScreen = "/SigninAndSignupScreen";
   static const String signinScreen = "/SigninScreen";
   static const String signupScreen = "/SignupScreen";
@@ -155,6 +157,11 @@ class Routes {
     GetPage(
       name: moreScreen,
       page: () => MoreScreen(),
+      transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: movieDetailScreen,
+      page: () => const MovieDetailScreen(),
       transition: Transition.noTransition,
     ),
   ];

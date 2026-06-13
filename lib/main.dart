@@ -12,6 +12,7 @@ import 'package:uuid/uuid.dart';
 import 'package:uremz100/core/services/storage_service.dart';
 import 'package:uremz100/core/network/network_caller.dart';
 import 'package:uremz100/Data/Repositories/home_repository.dart';
+import 'package:uremz100/Data/Repositories/content_details_repository.dart';
 import 'package:uremz100/Data/Datasources/Remote/user_remote_datasource.dart' as uremz100_user_remote;
 import 'package:uremz100/Data/Repositories/user_profile_repository.dart' as uremz100_user_repo;
 
@@ -34,6 +35,7 @@ void main() async {
   await Get.putAsync(() => StorageService().init());
   Get.put(NetworkCaller());
   Get.put(HomeRepository());
+  Get.put(ContentDetailsRepository());
   Get.put(uremz100_user_remote.UserRemoteDataSource());
   Get.put(uremz100_user_repo.UserProfileRepo());
 
