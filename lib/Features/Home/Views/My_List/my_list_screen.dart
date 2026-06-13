@@ -228,9 +228,9 @@ class MyListScreen extends GetView<MyListController> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: item.contentId.poster.isNotEmpty
+                child: item.contentId.posterUrl.isNotEmpty
                     ? Image.network(
-                        item.contentId.poster,
+                        item.contentId.posterUrl,
                         height: 150.h,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -344,9 +344,9 @@ class MyListScreen extends GetView<MyListController> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: item.itemId.poster.isNotEmpty
+                child: item.itemId.posterUrl.isNotEmpty
                     ? Image.network(
-                        item.itemId.poster,
+                        item.itemId.posterUrl,
                         height: 150.h,
                         width: double.infinity,
                         fit: BoxFit.cover,

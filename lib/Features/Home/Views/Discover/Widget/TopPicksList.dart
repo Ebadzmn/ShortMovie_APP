@@ -55,12 +55,30 @@ class TopPicksList extends StatelessWidget {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(4.r),
-                          child: Image.asset(
-                            movie.image,
-                            width: 30.w,
-                            height: 35.w,
-                            fit: BoxFit.cover,
-                          ),
+                          child: movie.image.isEmpty
+                              ? Container(
+                                  width: 30.w,
+                                  height: 35.w,
+                                  color: Colors.grey[800],
+                                )
+                              : (movie.image.startsWith('http')
+                                  ? Image.network(
+                                      movie.image,
+                                      width: 30.w,
+                                      height: 35.w,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        width: 30.w,
+                                        height: 35.w,
+                                        color: Colors.grey[800],
+                                      ),
+                                    )
+                                  : Image.asset(
+                                      movie.image,
+                                      width: 30.w,
+                                      height: 35.w,
+                                      fit: BoxFit.cover,
+                                    )),
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 4.w),

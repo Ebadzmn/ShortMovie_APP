@@ -35,12 +35,19 @@ class MovieCard extends StatelessWidget {
                           child: const Icon(Icons.broken_image, color: Colors.white54),
                         ),
                       )
-                    : Image.asset(
-                        movie.image,
-                        height: 150.h,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                    : (movie.image.isEmpty
+                        ? Container(
+                            height: 150.h,
+                            width: double.infinity,
+                            color: Colors.grey[800],
+                            child: const Icon(Icons.broken_image, color: Colors.white54),
+                          )
+                        : Image.asset(
+                            movie.image,
+                            height: 150.h,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )),
               ),
               if (movie.badge != null)
                 Positioned(

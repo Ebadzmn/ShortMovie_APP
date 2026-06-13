@@ -1,7 +1,7 @@
 class ShortsModel {
   final String id;
   final String videoUrl;
-  final String poster;
+  final String posterUrl;
   final String title;
   final String description;
   final String? profileImage;
@@ -12,7 +12,7 @@ class ShortsModel {
   ShortsModel({
     required this.id,
     required this.videoUrl,
-    required this.poster,
+    required this.posterUrl,
     required this.title,
     required this.description,
     this.profileImage,
@@ -25,7 +25,7 @@ class ShortsModel {
     return ShortsModel(
       id: json['id'] ?? json['_id'] ?? '',
       videoUrl: json['videoUrl'] ?? '',
-      poster: json['poster'] ?? '',
+      posterUrl: json['posterUrl'] ?? '',
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       profileImage: json['profileImage'],

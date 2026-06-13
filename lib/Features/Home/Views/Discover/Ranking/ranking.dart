@@ -125,18 +125,25 @@ class RankingView extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8.r),
-                  child: Image.network(
-                    movie.poster,
-                    width: 80.w,
-                    height: 100.h,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      width: 80.w,
-                      height: 100.h,
-                      color: const Color(0xFF262626),
-                      child: const Icon(Icons.broken_image, color: Colors.grey),
-                    ),
-                  ),
+                  child: movie.posterUrl.isEmpty
+                      ? Container(
+                          width: 80.w,
+                          height: 100.h,
+                          color: const Color(0xFF262626),
+                          child: const Icon(Icons.broken_image, color: Colors.grey),
+                        )
+                      : Image.network(
+                          movie.posterUrl,
+                          width: 80.w,
+                          height: 100.h,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: 80.w,
+                            height: 100.h,
+                            color: const Color(0xFF262626),
+                            child: const Icon(Icons.broken_image, color: Colors.grey),
+                          ),
+                        ),
                 ),
                 Positioned(
                   bottom: 0,

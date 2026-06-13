@@ -49,7 +49,7 @@ class NewView extends StatelessWidget {
             id: item.id.toString(),
             title: item.title,
             subtitle: item.contentType,
-            image: item.poster,
+            image: item.posterUrl,
             badge: item.isRecent ? 'New' : null,
             views: item.rating.toString(),
             categories: ['New'],
@@ -128,12 +128,19 @@ class NewView extends StatelessWidget {
                             child: const Icon(Icons.broken_image, color: Colors.white54),
                           ),
                         )
-                      : Image.asset(
-                          movie.image,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
+                      : (movie.image.isEmpty
+                          ? Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              color: Colors.grey[800],
+                              child: const Icon(Icons.broken_image, color: Colors.white54),
+                            )
+                          : Image.asset(
+                              movie.image,
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                            )),
                 ),
                 // "New" Badge
                 if (movie.badge != null)

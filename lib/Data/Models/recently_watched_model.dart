@@ -50,13 +50,13 @@ class RecentlyWatchedData {
 class RecentlyWatchedContentId {
   final String id;
   final String title;
-  final String poster;
+  final String posterUrl;
   final String type;
 
   RecentlyWatchedContentId({
     required this.id,
     required this.title,
-    required this.poster,
+    required this.posterUrl,
     required this.type,
   });
 
@@ -64,7 +64,7 @@ class RecentlyWatchedContentId {
     return RecentlyWatchedContentId(
       id: json['id'] ?? json['_id'] ?? '',
       title: json['title'] ?? '',
-      poster: json['poster'] ?? '',
+      posterUrl: json['posterUrl'] ?? '',
       type: json['type'] ?? '',
     );
   }

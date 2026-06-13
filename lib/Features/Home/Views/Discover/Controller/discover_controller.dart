@@ -134,7 +134,7 @@ class DiscoverController extends GetxController {
         id: item.id.toString(),
         title: item.title,
         subtitle: item.contentType,
-        image: item.poster,
+        image: item.posterUrl,
         badge: item.isRecent ? 'New' : null,
         views: item.rating.toString(),
         categories: ['Popular'],

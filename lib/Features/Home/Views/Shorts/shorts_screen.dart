@@ -77,7 +77,7 @@ class ShortsScreen extends StatelessWidget {
                       // Background Video
                       ShortsVideoPlayer(
                         videoUrl: shorts.videoUrl, 
-                        posterUrl: shorts.poster,
+                        posterUrl: shorts.posterUrl,
                         id: shorts.id,
                         index: index,
                       ),

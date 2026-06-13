@@ -76,13 +76,13 @@ class MyCollectionData {
 class MyCollectionItemId {
   final String id;
   final String title;
-  final String poster;
+  final String posterUrl;
   final String type;
 
   MyCollectionItemId({
     required this.id,
     required this.title,
-    required this.poster,
+    required this.posterUrl,
     required this.type,
   });
 
@@ -90,7 +90,7 @@ class MyCollectionItemId {
     return MyCollectionItemId(
       id: json['id'] ?? json['_id'] ?? '',
       title: json['title'] ?? '',
-      poster: json['poster'] ?? '',
+      posterUrl: json['posterUrl'] ?? '',
       type: json['type'] ?? '',
     );
   }

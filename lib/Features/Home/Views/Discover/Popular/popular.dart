@@ -287,12 +287,19 @@ class PopularView extends StatelessWidget {
                         child: Icon(Icons.broken_image, color: Colors.white54),
                       ),
                     )
-                  : Image.asset(
-                      movie.image,
-                      height: 145.h,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                  : (movie.image.isEmpty
+                      ? Container(
+                          height: 145.h,
+                          width: double.infinity,
+                          color: Colors.grey[800],
+                          child: const Icon(Icons.broken_image, color: Colors.white54),
+                        )
+                      : Image.asset(
+                          movie.image,
+                          height: 145.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )),
               ),
               if (movie.badge != null)
                 Positioned(
@@ -388,12 +395,19 @@ class PopularView extends StatelessWidget {
                             child: Icon(Icons.broken_image, color: Colors.white54),
                           ),
                         )
-                      : Image.asset(
-                          movie.image,
-                          height: 150.h,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
+                      : (movie.image.isEmpty
+                          ? Container(
+                              height: 150.h,
+                              width: double.infinity,
+                              color: Colors.grey[800],
+                              child: const Icon(Icons.broken_image, color: Colors.white54),
+                            )
+                          : Image.asset(
+                              movie.image,
+                              height: 150.h,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            )),
                     // Progress Bar at Bottom
                     Positioned(
                       bottom: 0,
@@ -506,12 +520,19 @@ class PopularView extends StatelessWidget {
                         child: Icon(Icons.broken_image, color: Colors.white54),
                       ),
                     )
-                  : Image.asset(
-                      movie.image,
-                      height: height ?? 380.h,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                  : (movie.image.isEmpty
+                      ? Container(
+                          height: height ?? 380.h,
+                          width: double.infinity,
+                          color: Colors.grey[800],
+                          child: const Icon(Icons.broken_image, color: Colors.white54),
+                        )
+                      : Image.asset(
+                          movie.image,
+                          height: height ?? 380.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )),
               ),
               // VIP Badge
               if (badge != null)
@@ -707,12 +728,19 @@ class PopularView extends StatelessWidget {
                                   child: Icon(Icons.broken_image, color: Colors.white54, size: 16),
                                 ),
                               )
-                            : Image.asset(
-                                movie.image,
-                                width: 30.w,
-                                height: 36.h,
-                                fit: BoxFit.cover,
-                              ),
+                            : (movie.image.isEmpty
+                                ? Container(
+                                    width: 30.w,
+                                    height: 36.h,
+                                    color: Colors.grey[800],
+                                    child: const Icon(Icons.broken_image, color: Colors.white54, size: 16),
+                                  )
+                                : Image.asset(
+                                    movie.image,
+                                    width: 30.w,
+                                    height: 36.h,
+                                    fit: BoxFit.cover,
+                                  )),
                         ),
                         Positioned(
                           bottom: 0,
@@ -898,12 +926,19 @@ class PopularView extends StatelessWidget {
                         child: Icon(Icons.broken_image, color: Colors.white54),
                       ),
                     )
-                  : Image.asset(
-                      movie.image,
-                      height: 150.h,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                  : (movie.image.isEmpty
+                      ? Container(
+                          height: 150.h,
+                          width: double.infinity,
+                          color: Colors.grey[800],
+                          child: const Icon(Icons.broken_image, color: Colors.white54),
+                        )
+                      : Image.asset(
+                          movie.image,
+                          height: 150.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )),
               ),
               // Badge
               Positioned(

@@ -67,7 +67,7 @@ class RankingSection {
 class RankingItem {
   final dynamic id;
   final String title;
-  final String poster;
+  final String posterUrl;
   final String type;
   final dynamic rating;
   final bool isRecent;
@@ -77,7 +77,7 @@ class RankingItem {
   RankingItem({
     required this.id,
     required this.title,
-    required this.poster,
+    required this.posterUrl,
     required this.type,
     required this.rating,
     required this.isRecent,
@@ -89,7 +89,7 @@ class RankingItem {
     return RankingItem(
       id: json['id'],
       title: json['title'] ?? '',
-      poster: json['poster'] ?? '',
+      posterUrl: json['posterUrl'] ?? '',
       type: json['type'] ?? '',
       rating: json['rating'],
       isRecent: json['isRecent'] ?? false,

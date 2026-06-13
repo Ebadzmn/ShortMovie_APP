@@ -48,12 +48,32 @@ class MovieDetailsPopup extends StatelessWidget {
                       Stack(
                         children: [
                           ClipRRect(
-                            child: Image.asset(
-                              movie.image,
-                              height: 420.h,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
+                            child: movie.image.isEmpty
+                                ? Container(
+                                    height: 420.h,
+                                    width: double.infinity,
+                                    color: Colors.grey[800],
+                                    child: const Icon(Icons.broken_image, color: Colors.white54, size: 50),
+                                  )
+                                : (movie.image.startsWith('http')
+                                    ? Image.network(
+                                        movie.image,
+                                        height: 420.h,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
+                                          height: 420.h,
+                                          width: double.infinity,
+                                          color: Colors.grey[800],
+                                          child: const Icon(Icons.broken_image, color: Colors.white54, size: 50),
+                                        ),
+                                      )
+                                    : Image.asset(
+                                        movie.image,
+                                        height: 420.h,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                      )),
                           ),
                           // Gradient overlay from bottom of image
                           Positioned(

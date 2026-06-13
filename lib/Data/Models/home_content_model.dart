@@ -41,7 +41,7 @@ class HomeSection {
 class ContentItem {
   final dynamic id;
   final String title;
-  final String poster;
+  final String posterUrl;
   final double rating;
   final String contentType;
   final bool isRecent;
@@ -49,7 +49,7 @@ class ContentItem {
   ContentItem({
     required this.id,
     required this.title,
-    required this.poster,
+    required this.posterUrl,
     required this.rating,
     required this.contentType,
     required this.isRecent,
@@ -59,7 +59,7 @@ class ContentItem {
     return ContentItem(
       id: json['id'],
       title: json['title'] ?? '',
-      poster: json['poster'] ?? '',
+      posterUrl: json['posterUrl'] ?? '',
       rating: (json['rating'] ?? 0.0).toDouble(),
       contentType: json['type'] ?? json['contentType'] ?? '',
       isRecent: json['isRecent'] ?? false,
