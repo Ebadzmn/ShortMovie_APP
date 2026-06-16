@@ -34,8 +34,14 @@ class DiscoverScreen extends StatelessWidget {
                       SizedBox(height: 10.h),
                       const DiscoverSearchBar(),
                       SizedBox(height: 18.h),
-                      const CategoryTabs(),
-                      SizedBox(height: 5.h),
+                      Obx(() => controller.isSearching.value || controller.searchTerm.value.isNotEmpty
+                          ? const SizedBox.shrink()
+                          : Column(
+                              children: [
+                                const CategoryTabs(),
+                                SizedBox(height: 5.h),
+                              ],
+                            )),
                     ],
                   ),
                 ),
@@ -50,6 +56,9 @@ class DiscoverScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Obx(() {
+                            if (controller.isSearching.value || controller.searchTerm.value.isNotEmpty) {
+                              return SearchResultsView(controller: controller);
+                            }
                             switch (controller.selectedCategory.value) {
                               case 'Popular':
                                 return PopularView(controller: controller);

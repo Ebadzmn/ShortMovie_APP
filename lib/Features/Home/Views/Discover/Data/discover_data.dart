@@ -2,13 +2,7 @@ import 'package:uremz100/Utils/app_images.dart';
 import '../Models/discrive_models.dart';
 
 class DiscoverData {
-  static final List<String> categories = [
-    'Popular',
-    'New',
-    'VIP',
-    'Ranking',
-    'Categories',
-  ];
+  static final List<String> categories = ['Popular', 'New', 'VIP', 'Ranking'];
 
   static final List<DiscoverMovie> allMovies = [
     DiscoverMovie(
@@ -107,13 +101,12 @@ class DiscoverData {
   ];
 
   static final List<BonusItem> dailyBonus = [
-    BonusItem(coins: 10, time: '5mins'),
-    BonusItem(coins: 15, time: '10mins'),
-    BonusItem(coins: 20, time: '20mins'),
-    BonusItem(coins: 25, time: '30mins'),
-    BonusItem(coins: 35, time: '10mins'),
-    BonusItem(coins: 45, time: '10mins'),
-    BonusItem(coins: 50, time: '20mins'),
-    BonusItem(coins: 80, time: 'Day2'),
+    BonusItem(coins: 10, time: 'Day 1'),
+    BonusItem(coins: 15, time: 'Day 2'),
+    BonusItem(coins: 20, time: 'Day 3'),
+    BonusItem(coins: 30, time: 'Day 4'),
+    BonusItem(coins: 40, time: 'Day 5'),
+    BonusItem(coins: 50, time: 'Day 6'),
+    BonusItem(coins: 100, time: 'Day 7'),
   ];
 }

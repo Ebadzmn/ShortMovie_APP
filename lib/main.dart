@@ -15,6 +15,11 @@ import 'package:uremz100/Data/Repositories/home_repository.dart';
 import 'package:uremz100/Data/Repositories/content_details_repository.dart';
 import 'package:uremz100/Data/Datasources/Remote/user_remote_datasource.dart' as uremz100_user_remote;
 import 'package:uremz100/Data/Repositories/user_profile_repository.dart' as uremz100_user_repo;
+import 'package:uremz100/Data/Datasources/Remote/search_remote_datasource.dart';
+import 'package:uremz100/Data/Repositories/search_repository.dart';
+import 'package:uremz100/Domain/UseCases/search_content_usecase.dart';
+import 'package:uremz100/core/services/rewards_service.dart';
+import 'package:uremz100/core/services/admob_service.dart';
 
 Future<void> _initializeGuestId() async {
   final prefs = await SharedPreferences.getInstance();
@@ -38,6 +43,11 @@ void main() async {
   Get.put(ContentDetailsRepository());
   Get.put(uremz100_user_remote.UserRemoteDataSource());
   Get.put(uremz100_user_repo.UserProfileRepo());
+  Get.put(SearchRemoteDataSource());
+  Get.put(SearchRepository(Get.find()));
+  Get.put(SearchContentUseCase(Get.find()));
+  Get.put(RewardsService());
+  Get.put(AdMobService());
 
   // // Initialize Firebase
   // await Firebase.initializeApp();

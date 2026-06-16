@@ -10,10 +10,13 @@ import 'package:uremz100/core/services/storage_service.dart';
 import 'package:uremz100/Data/Repositories/content_details_repository.dart';
 import 'package:uremz100/Data/Models/content_details_model.dart';
 import 'package:uremz100/Config/routes.dart';
-
+import 'package:uremz100/Domain/UseCases/search_content_usecase.dart';
+import 'package:uremz100/Domain/Entities/search_content_entity.dart';
+import 'package:uremz100/core/services/rewards_service.dart' as uremz100_rewards;
 class DiscoverController extends GetxController {
   final HomeRepository _homeRepository = Get.find<HomeRepository>();
   final ContentDetailsRepository _detailsRepository = Get.find<ContentDetailsRepository>();
+  final SearchContentUseCase _searchUseCase = Get.find<SearchContentUseCase>();
 
   var selectedCategory = 'Popular'.obs;
   var showBonusPopup = false.obs;
@@ -26,6 +29,12 @@ class DiscoverController extends GetxController {
 
   late ScrollController popularScrollController;
   Timer? _marqueeTimer;
+  Timer? _checkInTimer;
+
+  static const String _lastCheckInTimeKey = 'last_successful_check_in_time';
+
+  var canCheckIn = true.obs;
+  var checkInRemainingTime = ''.obs;
 
   final List<String> categories = DiscoverData.categories;
   final List<DiscoverMovie> allMovies = DiscoverData.allMovies;
@@ -56,12 +65,66 @@ class DiscoverController extends GetxController {
   var youMightLikeMovies = <DiscoverMovie>[].obs;
   var topPicksMovies = <DiscoverMovie>[].obs;
 
+  // Search API State
+  var isSearching = false.obs;
+  var searchResults = <SearchContentEntity>[].obs;
+  var searchTerm = ''.obs;
+  var searchMeta = Rxn<Map<String, dynamic>>();
+  var isSearchLoading = false.obs;
+  var searchErrorMessage = ''.obs;
+
   @override
   void onInit() {
     super.onInit();
     popularScrollController = ScrollController();
     _startMarquee();
+    _initCheckInState();
     fetchHomeContent();
+
+    debounce(searchTerm, (_) {
+      if (searchTerm.value.trim().isEmpty) {
+        isSearching.value = false;
+        searchResults.clear();
+        searchErrorMessage.value = '';
+      } else {
+        isSearching.value = true;
+        _performSearch(searchTerm.value.trim());
+      }
+    }, time: const Duration(milliseconds: 500));
+  }
+
+  void onSearchChanged(String query) {
+    searchTerm.value = query;
+  }
+
+  Future<void> _performSearch(String query) async {
+    isSearchLoading.value = true;
+    searchErrorMessage.value = '';
+
+    final response = await _searchUseCase.execute(query);
+
+    if (response.isSuccess && response.data != null) {
+      final searchResponse = response.data!;
+      if (searchResponse.data != null) {
+        searchResults.value = searchResponse.data!.map((e) => e.toEntity()).toList();
+      } else {
+        searchResults.clear();
+      }
+      if (searchResponse.meta != null) {
+        searchMeta.value = {
+          'total': searchResponse.meta!.total,
+          'limit': searchResponse.meta!.limit,
+          'page': searchResponse.meta!.page,
+          'totalPages': searchResponse.meta!.totalPages,
+          'hasNext': searchResponse.meta!.hasNext,
+          'hasPrev': searchResponse.meta!.hasPrev,
+        };
+      }
+    } else {
+      searchErrorMessage.value = response.message;
+      searchResults.clear();
+    }
+    isSearchLoading.value = false;
   }
 
   Future<void> fetchHomeContent() async {
@@ -300,6 +363,42 @@ class DiscoverController extends GetxController {
     showBonusPopup.value = false;
   }
 
+  Future<void> claimCheckIn() async {
+    try {
+      final rewardsService = Get.find<uremz100_rewards.RewardsService>();
+      final response = await rewardsService.claimDailyCheckIn();
+
+      if (response['success'] == true) {
+        _saveCheckInSuccess();
+        final data = response['data'];
+        Get.snackbar(
+          "Success",
+          "Claimed ${data['coinsEarned']} coins. Streak: ${data['streakDay']}",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        closePopup();
+      } else {
+        Get.snackbar(
+          "Notice",
+          response['message'],
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to claim check-in",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    }
+  }
+
   var isPlayingDirectly = false.obs;
 
   Future<void> playContentDirectly(String contentId) async {
@@ -389,7 +488,48 @@ class DiscoverController extends GetxController {
   @override
   void onClose() {
     _marqueeTimer?.cancel();
+    _checkInTimer?.cancel();
     popularScrollController.dispose();
     super.onClose();
+  }
+
+  void _initCheckInState() {
+    _updateCheckInStatus();
+    _checkInTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!canCheckIn.value) {
+        _updateCheckInStatus();
+      }
+    });
+  }
+
+  void _updateCheckInStatus() {
+    final storage = Get.find<StorageService>();
+    final lastCheckInStr = storage.readData<String>(_lastCheckInTimeKey);
+    if (lastCheckInStr != null) {
+      final lastCheckIn = DateTime.parse(lastCheckInStr).toUtc();
+      final now = DateTime.now().toUtc();
+      final difference = now.difference(lastCheckIn);
+      if (difference.inHours < 24) {
+        canCheckIn.value = false;
+        final remaining = const Duration(hours: 24) - difference;
+        final h = remaining.inHours.toString().padLeft(2, '0');
+        final m = (remaining.inMinutes % 60).toString().padLeft(2, '0');
+        final s = (remaining.inSeconds % 60).toString().padLeft(2, '0');
+        checkInRemainingTime.value = "$h:$m:$s";
+      } else {
+        canCheckIn.value = true;
+        checkInRemainingTime.value = '';
+      }
+    } else {
+      canCheckIn.value = true;
+      checkInRemainingTime.value = '';
+    }
+  }
+
+  void _saveCheckInSuccess() {
+    final storage = Get.find<StorageService>();
+    // If API returns timestamp, it could be read here. We use local UTC.
+    storage.writeData(_lastCheckInTimeKey, DateTime.now().toUtc().toIso8601String());
+    _updateCheckInStatus();
   }
 }

@@ -16,6 +16,7 @@ class TaskItemWidget extends StatelessWidget {
   final String layoutType; // 'subtitle_coins' or 'top_coins'
   final List<RewardStepModel>? steps;
   final VoidCallback onTap;
+  final bool isLoading;
 
   const TaskItemWidget({
     super.key,
@@ -28,6 +29,7 @@ class TaskItemWidget extends StatelessWidget {
     this.layoutType = 'top_coins',
     this.steps,
     required this.onTap,
+    this.isLoading = false,
   });
 
   @override
@@ -108,23 +110,30 @@ class TaskItemWidget extends StatelessWidget {
                 ),
               ),
               ElevatedButton(
-                onPressed: onTap,
+                onPressed: (buttonText == "Claimed" || isLoading) ? null : onTap,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isHighlight
-                      ? AppColors.yellow200
-                      : AppColors.orange100,
+                  backgroundColor: buttonText == "Claimed"
+                      ? Colors.grey.withOpacity(0.5)
+                      : (isHighlight ? AppColors.yellow200 : AppColors.orange100),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   padding: EdgeInsets.symmetric(vertical: 8.h),
                   elevation: 0,
+                  disabledBackgroundColor: Colors.grey.withOpacity(0.5),
                 ),
-                child: CustomText(
-                  text: buttonText,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500,
-                  color: isHighlight ? Colors.black : Colors.white,
-                ),
+                child: isLoading
+                    ? SizedBox(
+                        height: 16.h,
+                        width: 16.h,
+                        child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : CustomText(
+                        text: buttonText,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: buttonText == "Claimed" ? Colors.white70 : (isHighlight ? Colors.black : Colors.white),
+                      ),
               ),
             ],
           ),

@@ -13,7 +13,6 @@ import 'package:uremz100/Features/Home/Views/Profile/Change_email/change_email.d
 import 'package:uremz100/Features/Home/Views/Profile/Privacy_Policy/privacy_policy.dart';
 import 'package:uremz100/Features/Home/Views/Profile/Settings/settings_screen.dart';
 import 'package:uremz100/Features/Home/Views/Profile/User_agreement/user_agreement.dart';
-import 'package:uremz100/Features/Home/Views/Rewards/Vip_games/vip_games.dart';
 import 'package:uremz100/Features/Home/Views/Rewards/rewards_screen.dart';
 import 'package:uremz100/Features/Home/Views/Shorts/More/more_screen.dart';
 import 'package:uremz100/Features/Home/Views/Shorts/Shorts_FullSeriesScreen.dart';
@@ -43,7 +42,6 @@ class Routes {
   static const String standardVip = "/StandardVip";
   static const String myListScreen = "/MyListScreen";
   static const String rewardsScreen = "/RewardsScreen";
-  static const String vipGames = "/VipGames";
   static const String shortsScreen = "/ShortsScreen";
   static const String shortsFullSeriesOverlay = "/ShortsFullSeriesOverlay";
   static const String moreScreen = "/MoreScreen";
@@ -137,11 +135,6 @@ class Routes {
     GetPage(
       name: rewardsScreen,
       page: () => RewardsScreen(),
-      transition: Transition.noTransition,
-    ),
-    GetPage(
-      name: vipGames,
-      page: () => VipGames(),
       transition: Transition.noTransition,
     ),
     GetPage(

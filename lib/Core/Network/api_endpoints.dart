@@ -40,4 +40,5 @@ class ApiEndpoints {
   static String contentDetails(String contentId) => '/contents/$contentId/details';
   static String playbackUrl(String contentId) => '/contents/$contentId/playback-url';
   static String watchProgress(String contentId) => '/recently-watched/content/$contentId';
+  static const String searchContent = '/contents/search';
 }

@@ -10,7 +10,7 @@ class BenefitTaskModel {
   final String? titleSuffix;
   final String? subtitle;
   final String? coinsLabel;
-  final String buttonText;
+  String buttonText;
   final bool isHighlight;
   final String layoutType; // 'subtitle_coins' or 'top_coins'
   final bool isClaimed;

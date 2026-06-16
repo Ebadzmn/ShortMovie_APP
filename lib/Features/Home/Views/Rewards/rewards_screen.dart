@@ -7,9 +7,9 @@ import 'package:uremz100/Utils/app_colors.dart';
 import 'package:uremz100/Utils/app_icons.dart';
 import 'package:uremz100/Utils/app_images.dart';
 import 'Controller/rewards_controller.dart';
-import 'Vip_games/vip_games.dart';
 import 'Widget/reward_step_widget.dart';
 import 'Widget/task_item_widget.dart';
+import 'Widget/seven_days_streak_widget.dart';
 
 class RewardsScreen extends StatelessWidget {
   RewardsScreen({super.key});
@@ -18,112 +18,33 @@ class RewardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: Colors.black, // match bottom nav background
-        body: SafeArea(
-          top: false,
-          child: SingleChildScrollView(
-            child: Stack(
-              children: [
-                // 1. Background Image (Shown for both tabs)
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Image.asset(
-                    AppImages.rewards_image,
-                    height: 365.h,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-
-                // 2. Main Content
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 50.h,
-                    ), // Safe area top padding approximation
-                    _buildHeader(context),
-                    Obx(() {
-                      return controller.isRewardsTab.value
-                          ? _buildRewardsContent()
-                          : const VipGames();
-                    }),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 75.w, vertical: 10.h),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: SizedBox(
-          height: 30.h, // Further reduced height
-          child: TabBar(
-            onTap: (index) {
-              controller.toggleTab(index == 0);
-            },
-            indicatorSize: TabBarIndicatorSize.label,
-            indicator: UnderlineTabIndicator(
-              borderSide: BorderSide(width: 2.h, color: AppColors.orange100),
-              insets: EdgeInsets.only(
-                left: 22.w,
-                bottom: 2.h, // Pushes the indicator up towards the text
-              ), // Icon (18w) + Gap (4w) = 22w
-            ),
-            dividerColor: Colors.transparent,
-            labelPadding: EdgeInsets.zero,
-            labelColor: Colors.white,
-            unselectedLabelColor: const Color(0xFF8E8E8E),
-            labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w700),
-            unselectedLabelStyle: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w700,
-            ),
-            tabs: [
-              Tab(
-                height: 30.h, // Reduced tab height
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      AppIcons.short_reword_icon,
-                      width: 18.w,
-                      height: 18.w,
-                    ),
-                    SizedBox(width: 4.w),
-                    const Text("Rewards"),
-                  ],
+    return Scaffold(
+      backgroundColor: Colors.black, // match bottom nav background
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Stack(
+            children: [
+              // 1. Background Image (Shown for both tabs)
+              Align(
+                alignment: Alignment.topRight,
+                child: Image.asset(
+                  AppImages.rewards_image,
+                  height: 365.h,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
-              Tab(
-                height: 30.h, // Reduced tab height
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      AppIcons.vip_games_icon,
-                      width: 18.w,
-                      height: 18.w,
-                    ),
-                    SizedBox(width: 4.w),
-                    const Text("VIP Gems"),
-                  ],
-                ),
+
+              // 2. Main Content
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 50.h,
+                  ), // Safe area top padding approximation
+                  _buildRewardsContent(),
+                ],
               ),
             ],
           ),
@@ -131,7 +52,6 @@ class RewardsScreen extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildRewardsContent() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,17 +146,22 @@ class RewardsScreen extends StatelessWidget {
                           height: 18.w,
                         ),
                         SizedBox(width: 8.w),
-                        CustomText(
-                          text: "0",
+                        Obx(() => CustomText(
+                          text: controller.coinBalance.value.toString(),
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
-                        ),
+                        )),
                       ],
                     ),
                   ],
                 ),
               ),
+              SizedBox(height: 16.h),
+
+              // 7 Days Streak Card
+              SevenDaysStreakWidget(),
+
               SizedBox(height: 16.h),
 
               // Rewards Progress Card
@@ -280,15 +205,31 @@ class RewardsScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 15.h),
                     Obx(
-                      () => Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: controller.rewardsSteps.map((step) {
-                          return RewardStepWidget(
-                            coins: step.coins,
-                            time: step.time,
-                          );
-                        }).toList(),
-                      ),
+                      () {
+                        int nextRequiredMinutes = -1;
+                        for (var step in controller.rewardsSteps) {
+                          int requiredMinutes = int.tryParse(step.time.replaceAll('mins', '')) ?? 0;
+                          if (controller.claimedDuration.value < requiredMinutes) {
+                            nextRequiredMinutes = requiredMinutes;
+                            break;
+                          }
+                        }
+
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: controller.rewardsSteps.map((step) {
+                            int requiredMinutes = int.tryParse(step.time.replaceAll('mins', '')) ?? 0;
+                            bool isCompleted = controller.claimedDuration.value >= requiredMinutes;
+                            bool isActive = requiredMinutes == nextRequiredMinutes;
+                            return RewardStepWidget(
+                              coins: step.coins,
+                              time: step.time,
+                              isCompleted: isCompleted,
+                              isActive: isActive,
+                            );
+                          }).toList(),
+                        );
+                      },
                     ),
                     SizedBox(height: 22.h),
                     Container(
@@ -306,12 +247,23 @@ class RewardsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10.r),
                           ),
                         ),
-                        onPressed: () {},
-                        child: CustomText(
-                          text: "Quest Coins",
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                        onPressed: () {
+                          if (!controller.isClaimingWatchReward.value) {
+                            controller.claimWatchTimeReward(minutes: 5);
+                          }
+                        },
+                        child: Obx(() => controller.isClaimingWatchReward.value 
+                            ? SizedBox(
+                                height: 20.h,
+                                width: 20.h,
+                                child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              )
+                            : CustomText(
+                                text: "Quest Coins",
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              )
                         ),
                       ),
                     ),
@@ -373,7 +325,10 @@ class RewardsScreen extends StatelessWidget {
                             isHighlight: item.isHighlight,
                             layoutType: item.layoutType,
                             steps: item.steps,
-                            onTap: () {},
+                            isLoading: controller.isClaimingTask[item.title] ?? false,
+                            onTap: () {
+                              controller.handleTaskAction(item.title);
+                            },
                           );
                         },
                       ),

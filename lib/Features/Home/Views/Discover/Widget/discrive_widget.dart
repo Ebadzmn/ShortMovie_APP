@@ -6,6 +6,7 @@ import 'package:uremz100/Config/routes.dart';
 import 'package:uremz100/Shared/Widgets/Custom_Text.dart';
 import 'package:uremz100/Utils/app_icons.dart';
 import '../Controller/discover_controller.dart';
+import '../Models/discrive_models.dart';
 import 'MovieCard.dart';
 export 'MovieCard.dart';
 export 'TopPicksList.dart';
@@ -29,9 +30,12 @@ class DiscoverSearchBar extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
+                    onChanged: (value) {
+                      Get.find<DiscoverController>().onSearchChanged(value);
+                    },
                     style: TextStyle(color: Colors.white, fontSize: 14.sp),
                     decoration: InputDecoration(
-                      hintText: "Popular movies",
+                      hintText: "Search movies...",
                       hintStyle: TextStyle(
                         color: Color(0xFFC5C5C5),
                         fontSize: 14.sp,
@@ -158,5 +162,76 @@ class MovieGrid extends StatelessWidget {
         return MovieCard(movie: items[index]);
       },
     );
+  }
+}
+
+class SearchResultsView extends StatelessWidget {
+  final DiscoverController controller;
+  const SearchResultsView({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.isSearchLoading.value) {
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.only(top: 50.h),
+            child: CircularProgressIndicator(color: const Color(0xFFF76212)),
+          ),
+        );
+      }
+
+      if (controller.searchErrorMessage.value.isNotEmpty) {
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.only(top: 50.h),
+            child: CustomText(
+              text: controller.searchErrorMessage.value,
+              color: Colors.redAccent,
+            ),
+          ),
+        );
+      }
+
+      if (controller.searchResults.isEmpty) {
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.only(top: 50.h),
+            child: CustomText(
+              text: "No content found",
+              color: Colors.white54,
+              fontSize: 16.sp,
+            ),
+          ),
+        );
+      }
+
+      final mappedItems = controller.searchResults.map((entity) {
+        return DiscoverMovie(
+          id: entity.id,
+          title: entity.title,
+          subtitle: entity.type,
+          image: entity.posterUrl,
+          badge: entity.isRecent ? 'New' : null,
+          views: entity.rating.toString(),
+          categories: [],
+        );
+      }).toList();
+
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: mappedItems.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 0.h,
+          crossAxisSpacing: 10.w,
+          childAspectRatio: 0.52,
+        ),
+        itemBuilder: (context, index) {
+          return MovieCard(movie: mappedItems[index]);
+        },
+      );
+    });
   }
 }
