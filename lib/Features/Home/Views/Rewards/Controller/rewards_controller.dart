@@ -99,13 +99,18 @@ class RewardsController extends GetxController {
         _storageService.writeData(_lastCheckInTimeKey, now.toIso8601String());
         _updateCheckInStatus();
 
-        Get.snackbar(
-          "Success",
-          response['message'] ?? "Daily check-in reward claimed successfully",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFF76212),
-          colorText: const Color(0xFFFFFFFF),
-        );
+        if (Get.context != null) {
+          ScaffoldMessenger.of(Get.context!).showSnackBar(
+            SnackBar(
+              content: Text(
+                response['message'] ?? "Daily check-in reward claimed successfully",
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: const Color(0xFFF76212),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
         fetchWalletDetails();
       } else {
         Get.snackbar(
@@ -175,13 +180,18 @@ class RewardsController extends GetxController {
     try {
       final response = await _rewardsService.claimWatchTimeReward(minutes);
       if (response['success'] == true) {
-        Get.snackbar(
-          "Success",
-          "Watch time reward claimed successfully for $minutes minutes!",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFF76212),
-          colorText: const Color(0xFFFFFFFF),
-        );
+        if (Get.context != null) {
+          ScaffoldMessenger.of(Get.context!).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Watch time reward claimed successfully for $minutes minutes!",
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: const Color(0xFFF76212),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
         fetchWalletDetails();
       } else {
         Get.snackbar(
@@ -286,13 +296,18 @@ class RewardsController extends GetxController {
     try {
       final response = await _rewardsService.claimTaskReward(taskType);
       if (response['success'] == true) {
-        Get.snackbar(
-          "Success",
-          response['message'] ?? "$taskType reward claimed successfully",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFF76212),
-          colorText: const Color(0xFFFFFFFF),
-        );
+        if (Get.context != null) {
+          ScaffoldMessenger.of(Get.context!).showSnackBar(
+            SnackBar(
+              content: Text(
+                response['message'] ?? "$taskType reward claimed successfully",
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: const Color(0xFFF76212),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
         fetchWalletDetails();
       } else {
         Get.snackbar(

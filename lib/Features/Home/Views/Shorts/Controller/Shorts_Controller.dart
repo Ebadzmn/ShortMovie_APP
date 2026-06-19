@@ -185,11 +185,6 @@ class ShortsController extends GetxController {
   }
 
   Future<void> addToCollection(String shortId) async {
-    if (!isLoggedIn) {
-      showLoginPopup.value = true;
-      return;
-    }
-
     try {
       // Show loading (you can use a dialog or local state, here we just toggle locally if optimistic is needed)
       // We will actually just toggle it for now, and show a snackbar on success

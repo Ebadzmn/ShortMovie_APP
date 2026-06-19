@@ -66,8 +66,7 @@ class SevenDaysStreakWidget extends StatelessWidget {
               ),
               Obx(() => GestureDetector(
                 onTap: controller.canCheckIn.value ? () {
-                  // Wait, here they can trigger claimCheckIn if we want, or just be a visual button.
-                  // They usually open popup or trigger claim. The user just asked to show the time.
+                  controller.claimDailyCheckIn();
                 } : null,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),

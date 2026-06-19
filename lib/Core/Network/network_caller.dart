@@ -16,7 +16,9 @@ class NetworkCaller {
   NetworkCaller() {
     final BaseOptions options = BaseOptions(
       baseUrl: ApiEndpoints.baseUrl,
-      connectTimeout: const Duration(milliseconds: AppConstants.connectionTimeout),
+      connectTimeout: const Duration(
+        milliseconds: AppConstants.connectionTimeout,
+      ),
       receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeout),
       responseType: ResponseType.json,
       headers: {
@@ -35,13 +37,13 @@ class NetworkCaller {
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-          
+
           final prefs = await SharedPreferences.getInstance();
           final guestId = prefs.getString('guest_id');
           if (guestId != null && guestId.isNotEmpty) {
             options.headers['x-guest-id'] = guestId;
           }
-          
+
           return handler.next(options);
         },
       ),
@@ -152,15 +154,16 @@ class NetworkCaller {
   /// Handle Dio Response
   ApiResponse<T> _handleResponse<T>(Response response) {
     final statusCode = response.statusCode ?? 500;
-    
+
     // You might need to adjust this parsing depending on your API's exact response structure
     // e.g., if API returns { success: true, message: "...", data: {...} }
-    
+
     final responseData = response.data;
     String message = 'Success';
     bool isSuccess = statusCode >= 200 && statusCode < 300;
 
-    if (responseData is Map<String, dynamic> && responseData.containsKey('message')) {
+    if (responseData is Map<String, dynamic> &&
+        responseData.containsKey('message')) {
       message = responseData['message'].toString();
     }
 
@@ -171,10 +174,7 @@ class NetworkCaller {
         message: message,
       );
     } else {
-      return ApiResponse.error(
-        message: message,
-        statusCode: statusCode,
-      );
+      return ApiResponse.error(message: message, statusCode: statusCode);
     }
   }
 
@@ -190,8 +190,9 @@ class NetworkCaller {
           final statusCode = error.response?.statusCode;
           final responseData = error.response?.data;
           String errorMessage = 'Server error';
-          
-          if (responseData is Map<String, dynamic> && responseData.containsKey('message')) {
+
+          if (responseData is Map<String, dynamic> &&
+              responseData.containsKey('message')) {
             errorMessage = responseData['message'].toString();
           }
 

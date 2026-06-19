@@ -278,13 +278,9 @@ class DiscoverController extends GetxController {
 
   void closeMoviePopup() {
     showMoviePopup.value = false;
-    // After 500ms, show login popup if not logged in
+    // Skip login popup and directly trigger the next sequence
     Future.delayed(const Duration(milliseconds: 500), () {
-      if (!isLoggedIn) {
-        showLoginPopup.value = true;
-      } else {
-        closeLoginPopup();
-      }
+      closeLoginPopup();
     });
   }
 

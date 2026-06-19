@@ -46,7 +46,9 @@ class PopularView extends StatelessWidget {
             SizedBox(height: 8.h),
             // First Row (Horizontal Scroll - Trending)
             if (controller.trendingMovies.isNotEmpty)
-              _buildHorizontalStandardGrid(controller.trendingMovies),
+              _buildHorizontalStandardGrid(controller.trendingMovies)
+            else
+              _buildNoContent(),
 
             // VIP Banner
             _buildVipBanner(),
@@ -70,15 +72,18 @@ class PopularView extends StatelessWidget {
                   subtitle: m.subtitle,
                   views: m.views,
                 )).toList()
-              ),
+              )
+            else
+              _buildNoContent(),
               
             SizedBox(height: 24.h),
             SectionHeader(title: "You Might Like"),
             SizedBox(height: 16.h),
 
             // You Might Like Staggered Grid (Matching Image)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            if (controller.youMightLikeMovies.isNotEmpty)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Left Column: Large Movie Cards
                 Expanded(
@@ -143,7 +148,9 @@ class PopularView extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+            )
+            else
+              _buildNoContent(),
 
             SizedBox(height: 24.h),
             SectionHeader(title: "Recently Watched"),
@@ -158,7 +165,9 @@ class PopularView extends StatelessWidget {
                   progress: 0.5,
                   overlayMovie: null,
                 )).toList()
-              ),
+              )
+            else
+              _buildNoContent(),
           ],
         );
       }),
@@ -999,6 +1008,19 @@ class PopularView extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNoContent() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 20.h),
+      alignment: Alignment.center,
+      child: CustomText(
+        text: "No Content Found",
+        fontSize: 14.sp,
+        color: Colors.white54,
       ),
     );
   }
